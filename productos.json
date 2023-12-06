@@ -1,0 +1,56 @@
+[
+  {
+    "id": 2,
+    "title": "Air Jordan 2",
+    "description": "Descripción de las Air Jordan 2",
+    "price": 102224.99,
+    "thumbnail": "#",
+    "code": "DEF456",
+    "stock": 30
+  },
+  {
+    "id": 3,
+    "title": "Air Jordan 3",
+    "description": "Descripción de las Air Jordan 3",
+    "price": 97029.99,
+    "thumbnail": "#",
+    "code": "GHI789",
+    "stock": 20
+  },
+  {
+    "id": 4,
+    "title": "Air Jordan 4",
+    "description": "Descripción de las Air Jordan 4",
+    "price": 189039.99,
+    "thumbnail": "#",
+    "code": "JKL012",
+    "stock": 15
+  },
+  {
+    "id": 5,
+    "title": "Air Jordan 5",
+    "description": "Descripción de las Air Jordan 5",
+    "price": 200000.99,
+    "thumbnail": "#",
+    "code": "MNO345",
+    "stock": 10
+  },
+  {
+    "id": 6,
+    "title": "Producto nuevo",
+    "description": "Descripción del producto agregado",
+    "price": 111119.99,
+    "thumbnail": "#",
+    "code": "ABC456",
+    "stock": 50
+  },
+  {
+    "id": 7,
+    "title": "Producto nuevo",
+    "description": "Descripción del producto agregado",
+    "price": 111119.99,
+    "thumbnail": "#",
+    "code": "ABC456",
+    "stock": 50
+  }
+]
