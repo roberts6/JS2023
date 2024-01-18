@@ -48,6 +48,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import productsRouter from './routes/productsModel.router.js';
+import messagesRouter from './routes/messagesModel.router.js';
 
 dotenv.config();
 
@@ -58,9 +60,19 @@ const DB_URL = process.env.DB_URL;
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/products', (req, res) => {
-  res.send('Hola Mundo');
-});
+// rutas para productos
+app.get('/products', productsRouter);
+app.get('/products/:id', productsRouter);
+app.post('/products', productsRouter);
+app.put('/products/:id', productsRouter);
+app.delete('/products/:id', productsRouter);
+
+// rutas para mensajes
+app.get('/messages', messagesRouter);
+app.get('/messages/:id', messagesRouter);
+app.post('/messages', messagesRouter);
+app.put('/messages/:id', messagesRouter);
+app.delete('/messages/:id', messagesRouter);
 
 const server = app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);
