@@ -48,8 +48,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt'; // encripta la info antes de almacenarla
 import productsRouter from './routes/productsModel.router.js';
 import messagesRouter from './routes/messagesModel.router.js';
+import User from './routes/userModel.router.js';
 
 dotenv.config();
 
@@ -59,6 +61,8 @@ const DB_URL = process.env.DB_URL;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
+
+app.use(User); 
 
 // rutas para productos
 app.get('/products', productsRouter);
