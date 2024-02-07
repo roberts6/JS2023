@@ -20,8 +20,14 @@ const userSchema = new mongoose.Schema({
   lastName: {
     type: String,
     lowercase: true
+  },
+  githubId: {
+    type: String,
+    unique: true,
+    sparse: true
   }
-}, {
+}, 
+{
   timestamps: true 
 });
 

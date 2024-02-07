@@ -52,6 +52,8 @@ import bcrypt from 'bcrypt'; // encripta la info antes de almacenarla
 import productsRouter from './routes/productsModel.router.js';
 import messagesRouter from './routes/messagesModel.router.js';
 import User from './routes/userModel.router.js';
+import passport from './utilidades/passport-config.js';
+import session from 'express-session';
 
 dotenv.config();
 
@@ -63,6 +65,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(User); 
+
+// autenticación con GitHub
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // rutas para productos
 app.get('/products', productsRouter);
