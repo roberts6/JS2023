@@ -12,7 +12,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  role: "",
+  role: {
+    type: String,
+    required: true,
+    enum: ['user', 'admin', 'superadmin'], // Lista de roles permitidos
+    default: 'user' // Valor por defecto si no se provee uno
+  },
   name: {
     type: String,
     lowercase: true
@@ -24,9 +29,9 @@ const userSchema = new mongoose.Schema({
   githubId: {
     type: String,
     unique: true,
-    sparse: true
+    sparse: true // Esto permite que el campo esté ausente o sea único
   }
-}, 
+},
 {
   timestamps: true 
 });
@@ -34,4 +39,5 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 export default User;
+
 

@@ -48,7 +48,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt'; // encripta la info antes de almacenarla
 import productsRouter from './routes/productsModel.router.js';
 import messagesRouter from './routes/messagesModel.router.js';
 import User from './routes/userModel.router.js';
@@ -59,7 +58,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001; 
-const DB_URL = process.env.DB_URL; 
+//const DB_URL = process.env.DB_URL;
+const DB_URL = process.env.DB_ATLAS;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
@@ -96,13 +96,12 @@ const server = app.listen(PORT, () => {
 
 server.on('error', (error) => console.error(`Error en el servidor: ${error.message}`));
 
-mongoose.connect(DB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(DB_URL, { useNewUrlParser: true })
 .then(() => {
   console.log('Base de datos conectada');
 })
 .catch((error) => {
   console.error('Error al conectarse a la base de datos:', error);
+  process.exit()
 });
+

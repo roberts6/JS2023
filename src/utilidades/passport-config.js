@@ -1,7 +1,8 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GitHubStrategy } from 'passport-github';
-import User from './models/user.model.js';
+import 'dotenv/config';
+import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
 // Estrategia local para registro/login
