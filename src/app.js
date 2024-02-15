@@ -96,7 +96,7 @@ const server = app.listen(PORT, () => {
 
 server.on('error', (error) => console.error(`Error en el servidor: ${error.message}`));
 
-mongoose.connect(DB_URL, { useNewUrlParser: true })
+mongoose.connect(DB_URL)
 .then(() => {
   console.log('Base de datos conectada');
 })
