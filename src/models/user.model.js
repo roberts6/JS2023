@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
+    index: true
   },
   password: {
     type: String,
@@ -16,15 +17,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['user', 'admin', 'superadmin'], // Lista de roles permitidos
-    default: 'user' // Valor por defecto si no se provee uno
+    default: 'user', // Valor por defecto si no se provee uno
+    index: true
   },
   name: {
     type: String,
-    lowercase: true
+    lowercase: true,
+    index: true
   },
   lastName: {
     type: String,
-    lowercase: true
+    lowercase: true,
+    index: true
   },
   githubId: {
     type: String,
@@ -35,6 +39,8 @@ const userSchema = new mongoose.Schema({
 {
   timestamps: true 
 });
+
+userSchema.index({ email: 1, role: 1, name: 1, lastName: 1 });
 
 const User = mongoose.model('User', userSchema);
 
