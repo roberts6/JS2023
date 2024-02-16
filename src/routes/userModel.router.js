@@ -17,7 +17,7 @@ router.post('/registro', async (req, res) => {
       const user = new User({
         email: req.body.email,
         password: hashedPassword,
-        role: 'usuario', // Todos los nuevos usuarios tienen rol de usuario por defecto
+        role: 'user', // Todos los nuevos usuarios tienen rol de usuario por defecto
         name: req.body.name,
         lastName: req.body.lastName
       });

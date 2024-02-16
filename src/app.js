@@ -53,18 +53,22 @@ import messagesRouter from './routes/messagesModel.router.js';
 import User from './routes/userModel.router.js';
 import passport from './utilidades/passport-config.js';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import cookiesRouter from './routes/cookies.router.js'
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001; 
-//const DB_URL = process.env.DB_URL;
 const DB_URL = process.env.DB_ATLAS;
+const secret = process.env.COOKIE_SECRET;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(User); 
+
+app.use(cookieParser(secret)); // de esta forma "firmo" la cookie, para saber si fue modificada o no
 
 // autenticación con GitHub
 app.use(session({
@@ -89,6 +93,9 @@ app.get('/messages/:id', messagesRouter);
 app.post('/messages', messagesRouter);
 app.put('/messages/:id', messagesRouter);
 app.delete('/messages/:id', messagesRouter);
+
+// ruta para cookies
+app.use('/cookies', cookiesRouter);
 
 const server = app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);
