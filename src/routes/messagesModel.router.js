@@ -4,7 +4,7 @@ import { messagesModel } from "../models/messages.model.js";
 const router = Router();
 
 // devuelve todos los mensajes
-router.get("/messages", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const messages = await messagesModel.find();
     const response = {
@@ -18,7 +18,7 @@ router.get("/messages", async (req, res) => {
 });
 
 // mensaje buscado por id
-router.get("/messages/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -39,7 +39,7 @@ router.get("/messages/:id", async (req, res) => {
 });
 
 // genera un nuevo mensaje
-router.post("/messages", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { message, email } = req.body;
     const newMessage = new messagesModel({
@@ -58,7 +58,7 @@ router.post("/messages", async (req, res) => {
 });
 
 // actualiza un mensaje por id
-router.put("/messages/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { message, email } = req.body;
 
@@ -87,7 +87,7 @@ router.put("/messages/:id", async (req, res) => {
 });
 
 // borra un mensaje por su id
-router.delete("/messages/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {

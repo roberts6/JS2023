@@ -51,7 +51,7 @@ passport.use(new GitHubStrategy({
             role: 'user' // rol por defecto
           });
         } else {
-          // Si existe un usuario con esa dirección de correo, actualizarlo con el githubId
+          // Si existe un usuario con esa dirección de correo, actualiza con el githubId
           user.githubId = profile.id;
           await user.save();
         }

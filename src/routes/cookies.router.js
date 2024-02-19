@@ -19,7 +19,6 @@ router.post('/setCookie', (req, res) => {
   const options = {
     maxAge: oneWeekInMilliseconds
   }
-
   if (signed) {
     // Establecer una cookie firmada
     res.cookie(name, value, { ...options, signed: true });

@@ -66,33 +66,36 @@ const secret = process.env.COOKIE_SECRET;
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(User); 
+app.use('/user',User); 
 
 app.use(cookieParser(secret)); // de esta forma "firmo" la cookie, para saber si fue modificada o no
 
 // autenticación con GitHub
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
+  resave: true, // mantiene la sesión activa
+  saveUninitialized: true // guarda cualquier sesión.
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
+//ruta para inicio de session
+app.get('/session', (req,res) => {
+if (req.session.counter) {
+  req.session.counter++;
+  res.send(`entraste al sitio ${req.session.counter} veces`)
+} else {
+  req.session.counter = 1;
+  res.send('Bienvenido!')
+}
+})
+
 // rutas para productos
-app.get('/products', productsRouter);
-app.get('/products/:id', productsRouter);
-app.post('/products', productsRouter);
-app.put('/products/:id', productsRouter);
-app.delete('/products/:id', productsRouter);
+app.use('/products', productsRouter);
 
 // rutas para mensajes
-app.get('/messages', messagesRouter);
-app.get('/messages/:id', messagesRouter);
-app.post('/messages', messagesRouter);
-app.put('/messages/:id', messagesRouter);
-app.delete('/messages/:id', messagesRouter);
+app.use('/messages', messagesRouter);
 
 // ruta para cookies
 app.use('/cookies', cookiesRouter);
