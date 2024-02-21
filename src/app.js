@@ -55,6 +55,7 @@ import passport from './utilidades/passport-config.js';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cookiesRouter from './routes/cookies.router.js'
+import cors from 'cors'
 
 dotenv.config();
 
@@ -65,6 +66,8 @@ const secret = process.env.COOKIE_SECRET;
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(express.static('public'));
 
 app.use('/user',User); 
 
@@ -74,7 +77,11 @@ app.use(cookieParser(secret)); // de esta forma "firmo" la cookie, para saber si
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true, // mantiene la sesión activa
-  saveUninitialized: true // guarda cualquier sesión.
+  saveUninitialized: true, // guarda cualquier sesión.
+  cookie: {
+    secure: false, 
+    maxAge: 1000 * 60 * 60 * 24 // 24 horas
+  }
 }));
 
 app.use(passport.initialize());

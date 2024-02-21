@@ -5,17 +5,6 @@ const router = Router();
 
 // devuelve todos los productos
 router.get("/", async (req, res) => {
-  // try {
-  //   const products = await productModel.find();
-  //   const response = {
-  //     message: "Lista de productos",
-  //     data: products.length > 0 ? products : "No hay productos",
-  //   };
-  //   res.json(response);
-  //   console.log("esta es la respuesta: ",response)
-  // } catch (error) {
-  //   res.status(500).json({ error: "Error al obtener la lista de productos" });
-  // }});
   try {
     const { limit = 10, page = 1, sort } = req.query;
 

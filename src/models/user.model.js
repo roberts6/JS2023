@@ -31,6 +31,15 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     index: true
   },
+  age: {
+    type: Number,
+    require: true
+  },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Cart', // 'Cart' es el nombre del modelo al que hace referencia
+    required: false // no todos los usuarios deben tener un carrito obligatoriamente
+  },
   githubId: {
     type: String,
     unique: true,
