@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Productos</h1>
+    {{#if productos.length}}
+        <ul>
+            {{#each productos}}
+                <li>{{this.title}} - ${{this.price}}. Hay en stock: {{this.stock}}</li>
+            {{/each}}
+        </ul>
+    {{else}}
+        <p>No se encontraron productos.</p>
+    {{/if}}
+</body>
+</html>

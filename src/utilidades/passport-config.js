@@ -38,8 +38,8 @@ passport.use(new GitHubStrategy({
     try {
       let user = await User.findOne({ githubId: profile.id });
       if (!user) {
-        // busca un usuario con el mismo email
-        user = await User.findOne({ email: profile.emails[0].value });
+        // Busca un usuario con el mismo email
+        user = await User.findOne({ email: profile.emails && profile.emails[0].value });
         
         // Si no existe, crea un nuevo usuario con la información de GitHub
         if (!user) {
@@ -48,7 +48,7 @@ passport.use(new GitHubStrategy({
             email: profile.emails && profile.emails[0].value,
             githubId: profile.id,
             password: '', 
-            role: 'user' // rol por defecto
+            role: 'user' // Rol por defecto
           });
         } else {
           // Si existe un usuario con esa dirección de correo, actualiza con el githubId
@@ -75,3 +75,4 @@ passport.deserializeUser((id, done) => {
 });
 
 export default passport;
+

@@ -1,9 +1,22 @@
-import { Router } from "express";
+import express from "express";
 import bcrypt from "bcrypt";
-import User from "../models/user.model.js"; 
+import User from "../models/user.model.js";
 import autenticacion from "../middleware/autenticacion.js";
+import { engine } from 'express-handlebars';
 
-const router = Router();
+const app = express();
+
+// Configura express-handlebars como motor de vistas
+app.engine('handlebars', engine({
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true,
+  }
+}));
+app.set('view engine', 'handlebars');
+app.set('views', './src/views');
+
+const router = express.Router();
 
 // Ruta de registro
 router.post('/registro', async (req, res) => {
@@ -18,7 +31,7 @@ router.post('/registro', async (req, res) => {
       const user = new User({
         email: req.body.email,
         password: hashedPassword,
-        role: 'user', // Todos los nuevos usuarios tienen rol de user por defecto
+        role: 'user',
         name: req.body.name,
         lastName: req.body.lastName
       });
@@ -42,52 +55,50 @@ router.post('/registro', async (req, res) => {
 
 // Ruta de inicio de sesión
 router.post('/login', async (req, res) => {
-  try {
-    const user = await User.findOne({ email: req.body.email });
+    try {
+        const user = await User.findOne({ email: req.body.email });
 
-    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-      return res.status(401).json({ message: 'Correo o contraseña incorrectos 😔' });
+        if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+            return res.status(401).json({ message: 'Correo o contraseña incorrectos 😔' });
+        }
+
+        const isAdmin = user.email === process.env.ADMIN_EMAIL && await bcrypt.compare(req.body.password, user.password);
+
+        const userData = {
+            message: 'Login exitoso',
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                lastName: user.lastName,
+                role: isAdmin ? 'admin' : user.role
+            }
+        };
+        
+        // Renderizar la plantilla 'user-info' con los datos del usuario
+        res.status(200).json(userData); // Cambiado a json en lugar de render
+    } catch (error) {
+        res.status(500).json({ message: 'Error en el servidor: ' + error.message });
     }
-
-    // devuelve un booleano
-    const isAdmin = user.email === process.env.ADMIN_EMAIL && await bcrypt.compare(req.body.password, user.password);
-    
-    res.status(200).json({
-      message: 'Login exitoso',
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        lastName: user.lastName,
-        role: isAdmin ? 'admin' : user.role
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor: ' + error.message });
-  }
 });
 
-  router.get('/accesoAdmin', autenticacion, (req, res) => {
+router.get('/accesoAdmin', autenticacion, (req, res) => {
     try {
-        // ruta restringida, solo los administradores pueden acceder
-        // Acá puedo hacer operaciones que solo los administradores pueden realizar? ej:como gestionar usuarios, roles, etc.
-        // preguntarle a la tutora. ¿Tengo que pasar la lógica de productsModel.router.js por ej?
         res.json({ message: "Funcionalidades de administrador ok" });
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ message: 'Error en el servidor: ' + error.message });
-      }
-  });
+    }
+});
 
 // Ruta de cierre de sesión
 router.get('/logout', (req, res) => {
     const { name } = req.query;
-    console.log("este es el nombre de la cookie: ", name)
+    console.log("este es el nombre de la cookie: ", name);
     req.session.destroy(err => {
-        if(err) {
+        if (err) {
             return res.status(500).json({ message: 'Error al cerrar sesión: ' + err.message });
         }
-        // La cookie de sesión se borra si se uso.
-        res.clearCookie(name); // ver si es el nombre correcto de la cookie
+        res.clearCookie(name);
         return res.status(200).json({ message: 'Sesión cerrada con éxito' });
     });
 });

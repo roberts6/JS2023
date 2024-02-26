@@ -67,7 +67,8 @@ router.get("/", async (req, res) => {
       nextLink: nextLink
     };
 
-    res.status(200).json(responseObject);
+    //res.status(200).json(responseObject);
+    res.render('productList',{productos: products})
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });
   }
@@ -79,6 +80,7 @@ router.get("/:id", async (req, res) => {
 
   try {
     const product = await productModel.findById(id);
+    console.log(product);
 
     if (!product) {
       return res.status(404).json({ error: "Producto no encontrado" });
@@ -88,7 +90,9 @@ router.get("/:id", async (req, res) => {
       message: "Producto encontrado",
       data: product,
     };
-    res.json(response);
+    //res.json(response);
+    const productObj = product.toObject(); // Convierte el documento a objeto
+    res.render('productDetail', { productos: [productObj] });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el producto" });
   }
