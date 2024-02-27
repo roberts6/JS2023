@@ -37,6 +37,7 @@ const passportConfig = (passport) => {
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        console.log('este es el profile que trae github ',profile)
         let user = await User.findOne({ githubId: profile.id });
         if (!user) {
           // Busca un usuario con el mismo email

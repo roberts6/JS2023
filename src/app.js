@@ -13,6 +13,7 @@ import flash from 'connect-flash';
 import githubRouter from './routes/github.router.js';
 import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
+import { generateToken, authToken } from './utilidades/jwt.js'
 
 dotenv.config();
 
@@ -59,6 +60,39 @@ app.use((req, res, next) => {
 // Inicialización de Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// persistencia en memoria
+const users = []
+app.post('registro',(req,res)=>{
+  const {name, email, password} = req.body;
+  const exists = user.find(user => user.email === email);
+  if (exists) {
+    return res.status(400).send({status:'error', error:'este usuario ya existe'})
+  }
+  const user = {
+    name,
+    email,
+    password
+  }
+  users.push(user)
+// se genera el token
+const access_token = generateToken(user);
+res.send({status: 'success',access_token})
+})
+
+app.post('/login',(req,res) => {
+const {email, password} = req.body;
+const user = users.find(user=> user.email === email && user.password === password);
+if (!user) {
+  return res.status(400).send({status:'error', error: 'credenciales inválidas'})
+}
+const access_token = generateToken(user)
+res.send({status:'success', access_token})
+})
+
+app.get('/current',authToken,(req,res)=>{
+res.send({status:'success', payload:req.user})
+})
 
 // Ruta de prueba de sesión
 app.get('/session', (req, res) => {
