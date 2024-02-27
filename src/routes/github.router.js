@@ -24,4 +24,5 @@ router.post('/login', passport.authenticate('local', {
   failureFlash: 'Nombre de usuario o contraseña inválidos.' // Mensaje de error para fallo
 }));
 
+
 export default router;

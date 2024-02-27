@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import productsRouter from './routes/productsModel.router.js';
 import messagesRouter from './routes/messagesModel.router.js';
-import UserRouter from './routes/userModel.router.js';
+import userModelRouter from './routes/userModel.router.js';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cookiesRouter from './routes/cookies.router.js';
@@ -12,6 +12,7 @@ import { engine } from 'express-handlebars';
 import flash from 'connect-flash';
 import githubRouter from './routes/github.router.js';
 import passportConfig from './utilidades/passport-config.js';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const DB_URL = process.env.DB_ATLAS;
 const secret = process.env.COOKIE_SECRET;
-const passport = passportConfig;
+passportConfig(passport);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,8 +36,6 @@ app.engine('handlebars', engine({
 }));
 app.set('view engine', 'handlebars');
 app.set('views', './src/views');
-
-app.use('/user', UserRouter);
 app.use(cookieParser(secret));
 
 // Configuración de sesión
@@ -72,12 +71,21 @@ app.get('/session', (req, res) => {
   }
 });
 
+app.get('/user-info', (req, res) => {
+  if (req.user) {
+      res.render('user-info', { name: req.user.name, email: req.user.email, role: req.user.role });
+  } else {
+      // Manejar el caso cuando req.user no está definido
+      res.status(401).send('Usuario no autenticado');
+  }
+});
+
 // Rutas para productos, mensajes, cookies, usuarios y autenticación con GitHub
 app.use('/products', productsRouter);
 app.use('/messages', messagesRouter);
 app.use('/cookies', cookiesRouter);
 app.use('/auth', githubRouter);
-app.use('/user', UserRouter);
+app.use('/user', userModelRouter);
 
 // Iniciar el servidor
 const server = app.listen(PORT, () => {

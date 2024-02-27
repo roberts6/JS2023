@@ -32,8 +32,7 @@ const userSchema = new mongoose.Schema({
     index: true
   },
   age: {
-    type: Number,
-    required: true
+    type: Number
   },
   cart: {
     type: mongoose.Schema.Types.ObjectId, 
