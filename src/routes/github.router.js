@@ -15,12 +15,12 @@ router.get('/callback', (req, res) => {
 router.post('/registro', passport.authenticate('local', {
   successRedirect: '/products', // Ruta a redirigir en caso de éxito
   failureRedirect: '/registro', // Ruta a redirigir en caso de fallo
-  failureFlash: true // Habilita los mensajes de error flash
+  failureFlash: true 
 }));
 
 router.post('/login', passport.authenticate('local', {
-  successRedirect: '/products', // Ruta a redirigir en caso de éxito
-  failureRedirect: '/login', // Ruta a redirigir en caso de fallo
+  successRedirect: '/products', 
+  failureRedirect: '/login', 
   failureFlash: 'Nombre de usuario o contraseña inválidos.' // Mensaje de error para fallo
 }));
 
