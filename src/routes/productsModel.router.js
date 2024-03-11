@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { productModel } from "../models/products.model.js";
+import CustomRouter from './customRouter.js';
 
-const router = Router();
+// const router = Router(); ahora se reemplaza por customRouter
+const customRouter = new CustomRouter();
 
 // devuelve todos los productos
-router.get("/", async (req, res) => {
+customRouter.get("/", async (req, res) => {
   try {
     const { limit = 10, page = 1, sort } = req.query;
 
@@ -75,7 +77,7 @@ router.get("/", async (req, res) => {
 });
 
 // producto buscado por id
-router.get("/:id", async (req, res) => {
+customRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -99,7 +101,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // genera un nuevo producto
-router.post("/", async (req, res) => {
+customRouter.post("/", async (req, res) => {
   try {
     const { title, description, price, thumbnail, code, stock } = req.body;
     const newProduct = new productModel({
@@ -122,7 +124,7 @@ router.post("/", async (req, res) => {
 });
 
 // actualiza un producto por id
-router.put("/:id", async (req, res) => {
+customRouter.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { title, description, price, thumbnail, code, stock } = req.body;
 
@@ -155,7 +157,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // borra un producto por su id
-router.delete("/:id", async (req, res) => {
+customRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -175,4 +177,5 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-export default router;
+// export default router;
+export default customRouter.getRouter();

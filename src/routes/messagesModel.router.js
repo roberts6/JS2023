@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { messagesModel } from "../models/messages.model.js";
+import CustomRouter from './customRouter.js';
 
-const router = Router();
+// const router = Router();
+const customRouter = new CustomRouter();
 
 // devuelve todos los mensajes
-router.get("/", async (req, res) => {
+customRouter.get("/", async (req, res) => {
   try {
     const messages = await messagesModel.find();
     const response = {
@@ -18,7 +20,7 @@ router.get("/", async (req, res) => {
 });
 
 // mensaje buscado por id
-router.get("/:id", async (req, res) => {
+customRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -39,7 +41,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // genera un nuevo mensaje
-router.post("/", async (req, res) => {
+customRouter.post("/", async (req, res) => {
   try {
     const { message, email } = req.body;
     const newMessage = new messagesModel({
@@ -58,7 +60,7 @@ router.post("/", async (req, res) => {
 });
 
 // actualiza un mensaje por id
-router.put("/:id", async (req, res) => {
+customRouter.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { message, email } = req.body;
 
@@ -87,7 +89,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // borra un mensaje por su id
-router.delete("/:id", async (req, res) => {
+customRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -107,4 +109,5 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-export default router;
+// export default router;
+export default customRouter.getRouter();
