@@ -1,11 +1,19 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GitHubStrategy } from 'passport-github';
-import 'dotenv/config';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import dotenv from 'dotenv';
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
+dotenv.config();
+
+const jwtConfig = {
+  secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+};
 
 const passportConfig = (passport) => {
+
   // Estrategia local para registro/login
   passport.use(new LocalStrategy({
       usernameField: 'email',
@@ -64,6 +72,21 @@ const passportConfig = (passport) => {
       }
     }
   ));
+
+  passport.use(new JwtStrategy(jwtConfig, async (jwt_payload, done) => {
+    try {
+      // le asigna el valor buscando por ID. Este sub lo definí en token.js línea 7
+      const user = await User.findById(jwt_payload.sub); 
+      
+      if (user) {
+        return done(null, user);
+      } else {
+        return done(null, false);
+      }
+    } catch (error) {
+      return done(error, false);
+    }
+  }));
 
   // Serialización y deserialización del usuario para las sesiones
   passport.serializeUser((user, done) => {

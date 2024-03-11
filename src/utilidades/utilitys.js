@@ -1,18 +1,14 @@
-import fs from 'fs/promises';
+import passport from "passport";
 
-export async function readFile(filename) {
-  try {
-    const data = await fs.readFile(filename, 'utf-8');
-    return data.trim() === '' ? '[]' : data;
-  } catch (error) {
-    return '[]';
+export const passportCall = (Strategy) => {
+  return async (req, res, next) => {
+passport.authenticate(Strategy, function(err, user, info) {
+  if (err) return next(err)
+  if (!user) {
+    return res.status(401).send({error:info.messages?info.messages:info.toString()})
   }
-}
-
-export async function writeFile(filename, data) {
-  await fs.writeFile(filename, data, 'utf-8');
-}
-
-export function generateId() {
-  return Math.floor(Math.random() * 1000000).toString();
-}
+  req.user = user;
+  next();
+})(req,res,next);
+  }
+};

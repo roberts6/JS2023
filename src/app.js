@@ -13,7 +13,9 @@ import flash from 'connect-flash';
 import githubRouter from './routes/github.router.js';
 import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
-import { generateToken, authToken } from './utilidades/jwt.js'
+import { generateToken} from './utilidades/token.js'
+import { passportCall } from './utilidades/utilitys.js';
+import authorization from './middleware/authentication.js';
 
 dotenv.config();
 
@@ -63,22 +65,31 @@ app.use(passport.session());
 
 // persistencia en memoria
 const users = []
-app.post('registro',(req,res)=>{
-  const {name, email, password} = req.body;
-  const exists = user.find(user => user.email === email);
+app.post('/registro', async (req, res) => {
+  const { name, email, password, role } = req.body;
+  const exists = users.find(user => user.email === email);
+  
   if (exists) {
-    return res.status(400).send({status:'error', error:'este usuario ya existe'})
+    return res.status(400).send({ status: 'error', error: 'Este usuario ya existe' });
   }
+  
+  const hashedPassword = await bcrypt.hash(password, 10); 
+  
   const user = {
     name,
     email,
-    password
-  }
-  users.push(user)
-// se genera el token
-const access_token = generateToken(user);
-res.send({status: 'success',access_token})
-})
+    password: hashedPassword,
+    role
+  };
+  
+  users.push(user);
+  
+  // no incluyo el password como parte del token
+  const accessToken = generateToken({ email, role });
+  
+  res.send({ status: 'success', accessToken });
+});
+
 
 app.post('/login',(req,res) => {
 const {email, password} = req.body;
@@ -90,7 +101,7 @@ const access_token = generateToken(user)
 res.send({status:'success', access_token})
 })
 
-app.get('/current',authToken,(req,res)=>{
+app.get('/current',passport.authenticate('jwt', { session: false }),authorization,(req,res)=>{
 res.send({status:'success', payload:req.user})
 })
 
