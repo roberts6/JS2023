@@ -1,4 +1,5 @@
 import { Router as ExpressRouter } from "express";
+import handlePolicies from '../middleware/handlePolicies.js'
 
 export default class CustomRouter {
   constructor(){
@@ -38,5 +39,7 @@ export default class CustomRouter {
   delete(path, ...callbacks) {
     this.router.delete(path, ...callbacks);
   }
+
+  handlePolicies = handlePolicies;
 }
 

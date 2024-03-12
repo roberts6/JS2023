@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>Registro</h1>
+    {{#if messages.success}}
+        <div class="success">{{messages.success}}</div>
+    {{/if}}
     {{#if messages.error}}
         <div class="error">{{messages.error}}</div>
     {{/if}}
@@ -23,3 +26,4 @@
     <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
 </body>
 </html>
+

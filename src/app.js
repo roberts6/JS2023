@@ -164,7 +164,7 @@ import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
 import { generateToken } from './utilidades/token.js';
 import { passportCall } from './utilidades/utilitys.js';
-import authorization from './middleware/authentication.js';
+import authorization from './middleware/authorization.js';
 import bcrypt from 'bcrypt'; // encriptación de contraseñas
 import CustomRouter from './routes/customRouter.js'; // enrutador personalizado
 import ProductsRouter from './routes/productsModel.router.js' 
@@ -223,30 +223,30 @@ app.use(passport.session());
 // Rutas definidas en el enrutador personalizado
 app.use('/customRoutePath', customRouter.getRouter());
 
-// Registro de usuarios en memoria
-app.post('/registro', async (req, res) => {
-  const { name, email, password, role } = req.body;
-  const exists = users.find(user => user.email === email);
+// // Registro de usuarios en memoria
+// app.post('/registro', async (req, res) => {
+//   const { name, email, password, role } = req.body;
+//   const exists = users.find(user => user.email === email);
   
-  if (exists) {
-    return res.status(400).send({ status: 'error', error: 'Este usuario ya existe' });
-  }
+//   if (exists) {
+//     return res.status(400).send({ status: 'error', error: 'Este usuario ya existe' });
+//   }
   
-  const hashedPassword = await bcrypt.hash(password, 10); 
+//   const hashedPassword = await bcrypt.hash(password, 10); 
   
-  const user = {
-    name,
-    email,
-    password: hashedPassword,
-    role
-  };
+//   const user = {
+//     name,
+//     email,
+//     password: hashedPassword,
+//     role
+//   };
   
-  users.push(user);
+//   users.push(user);
   
-  const accessToken = generateToken({ email, role });
+//   const accessToken = generateToken({ email, role });
   
-  res.send({ status: 'success', accessToken });
-});
+//   res.send({ status: 'success', accessToken });
+// });
 
 // Autenticación de usuarios
 app.post('/login', (req, res) => {
