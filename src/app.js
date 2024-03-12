@@ -154,7 +154,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import productsRouter from './routes/productsModel.router.js';
 import messagesRouter from './routes/messagesModel.router.js';
 import userModelRouter from './routes/userModel.router.js';
 import session from 'express-session';
@@ -171,6 +170,7 @@ import { passportCall } from './utilidades/utilitys.js';
 import authorization from './middleware/authentication.js';
 import bcrypt from 'bcrypt'; // encriptación de contraseñas
 import CustomRouter from './routes/customRouter.js'; // enrutador personalizado
+import ProductsRouter from './routes/productsModel.router.js' 
 
 dotenv.config();
 
@@ -218,7 +218,7 @@ app.use((req, res, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Rutas definidas en tu enrutador personalizado
+// Rutas definidas en el enrutador personalizado
 app.use('/customRoutePath', customRouter.getRouter());
 
 // Registro de usuarios en memoria
@@ -280,7 +280,8 @@ app.get('/user-info', (req, res) => {
   }
 });
 
-app.use('/products', productsRouter);
+//app.use('/products', productsRouter);
+app.use('/products', ProductsRouter);
 app.use('/messages', messagesRouter);
 app.use('/cookies', cookiesRouter);
 app.use('/auth', githubRouter);

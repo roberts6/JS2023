@@ -5,38 +5,38 @@ export default class CustomRouter {
     this.router = ExpressRouter();
     this.init();
   }
+
   getRouter(){
     return this.router;
   }
 
-  applyCallbacks(callbacks){
-return callbacks.map((callback) => async (...params) => {
-try {
-    await callback.apply(this.params);
-} catch (error) {
-    console.error(error)
-    // params[1] hace referencia a res
-    params[1].status(500).send(error)
-}
-})
+  async applyCallbacks(callbacks){
+    return callbacks.map((callback) => async (req, res) => {
+      try {
+        await callback(req, res);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+      }
+    });
   }
 
   init(){}
 
   get(path, ...callbacks){
-    this.router.get(path, ...this.applyCallbacks(callbacks));
+    this.router.get(path, ...callbacks);
   }
 
   post(path, ...callbacks){
-    this.router.post(path, ...this.applyCallbacks(callbacks));
+    this.router.post(path, ...callbacks);
   }
 
   put(path, ...callbacks){
-    this.router.put(path, ...this.applyCallbacks(callbacks));
+    this.router.put(path, ...callbacks);
   }
 
   delete(path, ...callbacks) {
-    this.router.delete(path, ...this.applyCallbacks(callbacks));
+    this.router.delete(path, ...callbacks);
   }
-  }
+}
 
