@@ -1,11 +1,17 @@
 import { Router } from "express";
-const router = Router();
+import CustomRouter from "../routes/customRouter.js";
 
 const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000; // 7 días
 
+class CookiesRouter extends CustomRouter {
+  constructor() {
+    super();
+    this.initRoutes();
+  }
 
-// toma las cookies del request
-router.get('/getCookies', (req, res) => {
+  initRoutes() {
+    // toma las cookies del request
+this.get('/getCookies', (req, res) => {
   // Cookies no firmadas
   const cookies = req.cookies;
   // Cookies firmadas
@@ -14,7 +20,7 @@ router.get('/getCookies', (req, res) => {
 });
 
 // Setea una cookie
-router.post('/setCookie', (req, res) => {
+this.post('/setCookie', (req, res) => {
   const { name, value, signed } = req.body;
   const options = {
     maxAge: oneWeekInMilliseconds
@@ -31,11 +37,12 @@ router.post('/setCookie', (req, res) => {
 });
 
 // Borra una cookie por su nombre
-router.get('/deleteCookie', (req, res) => {
+this.get('/deleteCookie', (req, res) => {
   const { name } = req.query;
   
   res.clearCookie(name);
   res.json({ message: `Cookie ${name} borrada` });
 });
+  }}
 
-export default router;
+  export default new CookiesRouter().getRouter();

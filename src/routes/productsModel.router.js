@@ -1,5 +1,5 @@
-import CustomRouter from "../routes/customRouter.js";
 import { productModel } from "../models/products.model.js";
+import CustomRouter from "../routes/customRouter.js";
 
 class ProductsRouter extends CustomRouter {
   constructor() {

@@ -154,15 +154,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import messagesRouter from './routes/messagesModel.router.js';
-import userModelRouter from './routes/userModel.router.js';
 import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import cookiesRouter from './routes/cookies.router.js';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import { engine } from 'express-handlebars';
 import flash from 'connect-flash';
-import githubRouter from './routes/github.router.js';
 import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
 import { generateToken } from './utilidades/token.js';
@@ -171,6 +168,10 @@ import authorization from './middleware/authentication.js';
 import bcrypt from 'bcrypt'; // encriptación de contraseñas
 import CustomRouter from './routes/customRouter.js'; // enrutador personalizado
 import ProductsRouter from './routes/productsModel.router.js' 
+import UsersRouter from './routes/userModel.router.js'
+import MessagesRouter from './routes/messagesModel.router.js';
+import CookiesRouter from './routes/cookies.router.js'
+import GithubRouter from './routes/github.router.js';
 
 dotenv.config();
 
@@ -184,6 +185,7 @@ const users = [];
 const customRouter = new CustomRouter(); // Instancia el enrutador personalizado
 
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static('public'));
@@ -282,10 +284,10 @@ app.get('/user-info', (req, res) => {
 
 //app.use('/products', productsRouter);
 app.use('/products', ProductsRouter);
-app.use('/messages', messagesRouter);
-app.use('/cookies', cookiesRouter);
-app.use('/auth', githubRouter);
-app.use('/user', userModelRouter);
+app.use('/user', UsersRouter);
+app.use('/cookies', CookiesRouter);
+app.use('/auth', GithubRouter);
+app.use('/messages', MessagesRouter);
 
 const server = app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);

@@ -1,47 +1,41 @@
-import { Router } from "express";
 import { messagesModel } from "../models/messages.model.js";
-import CustomRouter from './customRouter.js';
+import CustomRouter from "../routes/customRouter.js";
 
-// const router = Router();
-const customRouter = new CustomRouter();
+class MessagesRouter extends CustomRouter {
+  constructor() {
+    super();
+    this.initRoutes();
+  }
 
+  initRoutes() {
 // devuelve todos los mensajes
-customRouter.get("/", async (req, res) => {
+this.get("/", async (req, res) => {
   try {
     const messages = await messagesModel.find();
-    const response = {
-      message: "Lista de mensajes",
-      data: messages.length > 0 ? messages : "No hay mensajes",
-    };
-    res.json(response);
+    res.render('messagesList', { messages: messages.length > 0 ? messages : null });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener la lista de mensajes" });
   }
 });
 
-// mensaje buscado por id
-customRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
 
+// mensaje buscado por id
+this.get("/:id", async (req, res) => {
+  const { id } = req.params;
   try {
     const message = await messagesModel.findById(id);
-
     if (!message) {
       return res.status(404).json({ error: "mensaje no encontrado" });
     }
-
-    const response = {
-      message: "Mensaje encontrado",
-      data: message,
-    };
-    res.json(response);
+    res.render('messageDetail', { message });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el mensaje" });
   }
 });
 
+
 // genera un nuevo mensaje
-customRouter.post("/", async (req, res) => {
+this.post("/", async (req, res) => {
   try {
     const { message, email } = req.body;
     const newMessage = new messagesModel({
@@ -53,6 +47,7 @@ customRouter.post("/", async (req, res) => {
       message: "mensaje creado",
       data: newMessage,
     };
+    console.log(response.data)
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: "Error al crear el mensaje" });
@@ -60,7 +55,7 @@ customRouter.post("/", async (req, res) => {
 });
 
 // actualiza un mensaje por id
-customRouter.put("/:id", async (req, res) => {
+this.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { message, email } = req.body;
 
@@ -89,7 +84,7 @@ customRouter.put("/:id", async (req, res) => {
 });
 
 // borra un mensaje por su id
-customRouter.delete("/:id", async (req, res) => {
+this.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -108,6 +103,8 @@ customRouter.delete("/:id", async (req, res) => {
     res.status(500).json({ error: "Error al eliminar el mensaje" });
   }
 });
+  }}
+
 
 // export default router;
-export default customRouter.getRouter();
+export default new MessagesRouter().getRouter();
