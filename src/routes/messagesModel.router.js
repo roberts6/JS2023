@@ -1,12 +1,22 @@
 import { messagesModel } from "../models/messages.model.js";
 import CustomRouter from "../routes/customRouter.js";
-import twilio from 'twilio';
+import twilio from 'twilio'; // envío de mensajería en general (SMS en este caso)
+import nodemailer from 'nodemailer'; // envío de correos (gmail en este caso)
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 // inicialización del cliente de twilio
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+const transport = nodemailer.createTransport({
+  service:'gmail',
+  port:587,
+  auth: {
+    user: process.env.USER_GMAIL, 
+    pass: process.env.PASS_GMAIL  
+  }
+  });
 
 class MessagesRouter extends CustomRouter {
   constructor() {
@@ -110,7 +120,7 @@ this.delete("/:id", async (req, res) => {
   }
 });
 
-// crea un SMS con Twilio
+// crea un SMS con Twilio --> prueba hecha desde POSTMAN
 this.post('/sms', async (req, res) => {
   const { to, body } = req.body; 
   if (!to || !body) {
@@ -128,6 +138,23 @@ this.post('/sms', async (req, res) => {
     res.status(500).json({ error: "Error al enviar SMS con Twilio" });
   }
 });
+
+//envío de correos desde Gmail
+this.post('/mail', async (req,res) => {
+  const {email, name} = req.body
+let result = await transport.sendMail({
+  from: `Coder Test <${USER_GMAIL}>`,
+  to: email,
+  subject: `Hola ${name}!! este es un correo de prueba`,
+  html:`
+  <div>
+  <h1>${name}, este es un correo de prueba! no hace falta que respondas</h1>
+  </div>
+  `,
+  attachments:[]
+})
+res.send({status:"success", result: "email enviado"})
+})
   }}
 
 
