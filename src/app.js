@@ -163,7 +163,7 @@ import flash from 'connect-flash';
 import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
 import { generateToken } from './utilidades/token.js';
-import { passportCall } from './utilidades/utilitys.js';
+import { passportCall } from './utilidades/passportCall.js';
 import authorization from './middleware/authorization.js';
 import bcrypt from 'bcrypt'; // encriptación de contraseñas
 import CustomRouter from './routes/customRouter.js'; // enrutador personalizado
@@ -249,15 +249,15 @@ app.use('/customRoutePath', customRouter.getRouter());
 // });
 
 // Autenticación de usuarios
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(user => user.email === email && bcrypt.compareSync(password, user.password));
-  if (!user) {
-    return res.status(400).send({ status: 'error', error: 'Credenciales inválidas' });
-  }
-  const access_token = generateToken(user);
-  res.send({ status: 'success', access_token });
-});
+// app.post('/login', (req, res) => {
+//   const { email, password } = req.body;
+//   const user = users.find(user => user.email === email && bcrypt.compareSync(password, user.password));
+//   if (!user) {
+//     return res.status(400).send({ status: 'error', error: 'Credenciales inválidas' });
+//   }
+//   const access_token = generateToken(user);
+//   res.send({ status: 'success', access_token });
+// });
 
 // Ruta protegida que solo muestra datos del usuario autenticado
 app.get('/current', passport.authenticate('jwt', { session: false }), authorization, (req, res) => {
@@ -282,7 +282,6 @@ app.get('/user-info', (req, res) => {
   }
 });
 
-//app.use('/products', productsRouter);
 app.use('/products', ProductsRouter);
 app.use('/user', UsersRouter);
 app.use('/cookies', CookiesRouter);

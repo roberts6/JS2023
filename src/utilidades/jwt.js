@@ -5,7 +5,7 @@ import User from '../models/user.model.js';
 // Define las opciones de la estrategia JWT
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'CoderKey'  // Aquí se cambió OPTIONS por secretOrKey
+  secretOrKey: 'CoderKey'  
 };
 
 // Configura la estrategia JWT

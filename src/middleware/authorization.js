@@ -1,7 +1,7 @@
-// Definir middleware de autenticación
+// middleware de autenticación
 const authorization = (req, res, next) => {
   if (!res) {
-    throw new Error('La respuesta no está definida en el middleware.');
+    throw new Error('definir respuesta. Pendiente.');
 }
   if (!req.user) {
     return res.status(401).send({

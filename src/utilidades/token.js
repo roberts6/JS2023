@@ -10,15 +10,42 @@ export const generateToken = ({ _id, name, email, role }) => {
 
 export const authToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).send({ error: 'No estás autenticado' });
-    }
-    const token = authHeader.split(' ')[1];
-    Jwt.verify(token, PRIVATE_KEY, (error, decoded) => {
-        if (error) {
-            return res.status(403).send({ error: 'No estás autorizado - ' + error.message });  // Proporciona el mensaje de error para diagnóstico
+
+    try {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).send({ error: "Acceso no autorizado. Token de autorización no proporcionado." });
         }
+
+        const token = authHeader.split(" ")[1];
+        
+        const decoded = verify(token, PRIVATE_KEY);
+
+        // Verificar si decoded es un objeto
+        if (typeof decoded !== "object" || !decoded.sub) {
+            throw new Error("Token no contiene información válida.");
+        }
+
         req.user = decoded;
         next();
-    });
+    } catch (error) {
+        console.error(error);
+        return res.status(403).send({ error: "Acceso denegado. Token inválido." });
+    }
 };
+
+export const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Acceso no autorizado. Token de autorización no proporcionado.' });
+    }
+
+    jwt.verify(token, PRIVATE_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: 'Acceso no autorizado. Token inválido.' });
+        }
+
+        req.user = decoded; // Almacenar la información del usuario en el objeto de solicitud
+        next();
+    });
+}

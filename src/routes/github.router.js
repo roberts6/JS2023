@@ -47,15 +47,15 @@ this.get('/callback', (req, res) => {
 
 // Actualiza las rutas de registro y login para utilizar Passport
 this.post('/registro', passport.authenticate('local', {
-  successRedirect: '/products', // Ruta a redirigir en caso de éxito
-  failureRedirect: '/registro', // Ruta a redirigir en caso de fallo
-  failureFlash: true 
+  successRedirect: '/products',
+  failureRedirect: '/registro',
+  failureFlash: true
 }));
 
 this.post('/login', passport.authenticate('local', {
-  successRedirect: '/products', 
-  failureRedirect: '/login', 
-  failureFlash: 'Nombre de usuario o contraseña inválidos.' // Mensaje de error para fallo
+  successRedirect: '/products',
+  failureRedirect: '/login',
+  failureFlash: 'Nombre de usuario o contraseña inválidos.'
 }));
   }}
 

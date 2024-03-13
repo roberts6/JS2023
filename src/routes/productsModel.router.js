@@ -1,6 +1,7 @@
 import { productModel } from "../models/products.model.js";
 import CustomRouter from "../routes/customRouter.js";
 import handlePolicies from "../middleware/handlePolicies.js"; // manejo de las políticas de acceso para cada rol
+import { generateToken, authToken, verifyToken } from '../utilidades/token.js';
 
 class ProductsRouter extends CustomRouter {
   constructor() {
@@ -9,7 +10,7 @@ class ProductsRouter extends CustomRouter {
   }
 
   initRoutes() {
-    this.get('/',handlePolicies(['user', 'admin', 'superadmin']), async (req, res) => {
+    this.get('/',authToken,handlePolicies(['user', 'admin', 'superadmin']), async (req, res) => {
       try {
         const { limit = 10, page = 1, sort } = req.query;
 
@@ -63,7 +64,7 @@ class ProductsRouter extends CustomRouter {
       }
     });
 
-    this.get('/:id',handlePolicies(['user', 'admin', 'superadmin']), async (req, res) => {
+    this.get('/:id',authToken,handlePolicies(['user', 'admin', 'superadmin']), async (req, res) => {
       const { id } = req.params;
 
       try {
@@ -80,7 +81,7 @@ class ProductsRouter extends CustomRouter {
       }
     });
      // solo va a acceder a este método quien tenga un rol de Admin
-    this.post('/',handlePolicies(['admin', 'superadmin']), async (req, res) => {
+    this.post('/',authToken,verifyToken,handlePolicies(['admin', 'superadmin']), async (req, res) => {
       try {
         const { title, description, price, thumbnail, code, stock } = req.body;
             const newProduct = new productModel({
@@ -102,7 +103,7 @@ class ProductsRouter extends CustomRouter {
       }
     });
       // solo va a acceder a este método quien tenga un rol de Admin
-    this.put('/:id',handlePolicies(['admin', 'superadmin']), async (req, res) => {
+    this.put('/:id',authToken,handlePolicies(['admin', 'superadmin']), async (req, res) => {
       const { id } = req.params;
       try {
         const updatedProduct = await productModel.findByIdAndUpdate(
@@ -126,7 +127,7 @@ class ProductsRouter extends CustomRouter {
     });
 
      // solo va a acceder a este método quien tenga un rol de Admin
-    this.delete('/:id',handlePolicies(['admin', 'superadmin']), async (req, res) => {
+    this.delete('/:id',authToken,handlePolicies(['admin', 'superadmin']), async (req, res) => {
       const { id } = req.params;
       try {
         const deletedProduct = await productModel.findByIdAndDelete(id);

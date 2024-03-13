@@ -2,6 +2,7 @@
 import CustomRouter from './customRouter.js';
 import bcrypt from 'bcrypt';
 import User from '../models/user.model.js';
+import {generateToken} from '../utilidades/token.js'
 
 class UsersRouter extends CustomRouter {
     constructor() {
@@ -10,6 +11,7 @@ class UsersRouter extends CustomRouter {
     }
 
     initRoutes() {
+        const users = []
         // Vista para registro de usuarios 
         this.get('/registro', (req, res) => {
             res.render('registration-form');
@@ -75,50 +77,37 @@ class UsersRouter extends CustomRouter {
             }
         });
 
-
-
         // acceso al login
         this.get('/login', (req, res) => {
             res.render('login-form');
         });
 
-        // Ruta para autenticar al usuario y iniciar sesión
+        // Ruta para autenticar al usuario e iniciar sesión
         this.post('/login', async (req, res) => {
-            const {
-                email,
-                password
-            } = req.body;
-
+            const { email, password } = req.body;
+        
             try {
-                const user = await User.findOne({
-                    email
-                });
-
+                const user = await User.findOne({ email });
+        
                 if (!user) {
-                    return res.status(401).json({
-                        message: 'Correo electrónico o contraseña incorrectos'
-                    });
+                    return res.status(401).json({ error: 'Correo electrónico no encontrado en la base de datos' });
                 }
-
+        
                 const passwordMatch = await bcrypt.compare(password, user.password);
-
+        
                 if (!passwordMatch) {
-                    return res.status(401).json({
-                        message: 'Correo electrónico o contraseña incorrectos'
-                    });
+                    return res.status(401).json({ error: 'Contraseña incorrecta' });
                 }
-
-                res.json({
-                    message: 'Inicio de sesión exitoso',
-                    user
-                });
-
+        
+                // Generar el token JWT para el usuario
+                const access_token = generateToken({ _id: user._id, name: user.name, email: user.email, role: user.role });
+        console.log('access token generado en userModel.router', access_token)
+        res.status(200).json({ access_token, redirectURL: '/products' }); // Redirigi a la página de productos después de autenticar al usuario
             } catch (error) {
-                res.status(500).json({
-                    message: 'Error en el servidor: ' + error.message
-                });
+                console.error(error); // Imprimir el error completo en la consola del servidor
+                res.status(500).json({ error: 'Error en el servidor al intentar iniciar sesión' }); // Respuesta genérica de error
             }
-        });
+        });    
 
         // Ruta para modificar un usuario por su id
         this.put("/:id", async (req, res) => {
