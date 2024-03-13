@@ -1,5 +1,12 @@
 import { messagesModel } from "../models/messages.model.js";
 import CustomRouter from "../routes/customRouter.js";
+import twilio from 'twilio';
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+// inicialización del cliente de twilio
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 class MessagesRouter extends CustomRouter {
   constructor() {
@@ -17,7 +24,6 @@ this.get("/", async (req, res) => {
     res.status(500).json({ error: "Error al obtener la lista de mensajes" });
   }
 });
-
 
 // mensaje buscado por id
 this.get("/:id", async (req, res) => {
@@ -101,6 +107,25 @@ this.delete("/:id", async (req, res) => {
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar el mensaje" });
+  }
+});
+
+// crea un SMS con Twilio
+this.post('/sms', async (req, res) => {
+  const { to, body } = req.body; 
+  if (!to || !body) {
+    return res.status(400).json({ error: "Faltan datos para enviar el SMS" });
+  }
+  try {
+    let result = await twilioClient.messages.create({
+      body: 'SMS desde Twilio',
+      from: process.env.TWILIO_SMS_NUMBER,
+      to: to
+    });
+    res.send({ status: "success", result: "Mensaje enviado" });
+  } catch (error) {
+    console.error("Error enviando SMS: ", error);
+    res.status(500).json({ error: "Error al enviar SMS con Twilio" });
   }
 });
   }}
