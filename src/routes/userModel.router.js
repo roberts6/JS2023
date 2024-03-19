@@ -3,6 +3,9 @@ import CustomRouter from './customRouter.js';
 import bcrypt from 'bcrypt';
 import User from '../models/user.model.js';
 import {generateToken} from '../utilidades/token.js'
+import CustomError from '../services/CustomErrors.js';
+import { generateUserErrorInfo } from '../services/info.js';
+import EErrors from '../services/enums.js';
 
 class UsersRouter extends CustomRouter {
     constructor() {
@@ -28,6 +31,16 @@ class UsersRouter extends CustomRouter {
                     age,
                     role
                 } = req.body;
+
+                if (!email || !name || !lastName || !age || !password) {
+                    CustomError.createError({
+                        name: 'creación del usuario errónea',
+                        cause: generateUserErrorInfo({name, lastName, age, email}),
+                        message: 'Error al intentar crear un usuario',
+                        code:EErrors.INVALID_TYPES_ERROR
+                    })
+                    throw error;
+                }
 
                 // Verificar si el correo electrónico ya está registrado
                 const existingUser = await User.findOne({
@@ -56,7 +69,6 @@ class UsersRouter extends CustomRouter {
                 // Mostrar el usuario creado en la consola
                 console.log('Usuario registrado con éxito:', newUser);
 
-                //res.render('registroExitoso');
                 res.render('registroExitoso', {
                     user: newUser
                 }, (err, html) => {
@@ -70,10 +82,15 @@ class UsersRouter extends CustomRouter {
                 });
             } catch (error) {
                 // Capturar y responder con un mensaje de error en caso de falla
+                if (error.code && error.code === EErrors.INVALID_TYPES_ERROR) {
+                    return res.status(400).json({
+                        message: error.message || 'Se produjo un error al crear el usuario.'
+                    })
+                }
                 console.error(error);
                 res.status(500).json({
                     message: 'Error en el servidor: ' + error.message
-                });
+                })
             }
         });
 

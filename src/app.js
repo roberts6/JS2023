@@ -162,8 +162,8 @@ import { engine } from 'express-handlebars';
 import flash from 'connect-flash';
 import passportConfig from './utilidades/passport-config.js';
 import passport from 'passport';
-import { generateToken } from './utilidades/token.js';
-import { passportCall } from './utilidades/passportCall.js';
+// import { generateToken } from './utilidades/token.js';
+// import { passportCall } from './utilidades/passportCall.js';
 import authorization from './middleware/authorization.js';
 import bcrypt from 'bcrypt'; // encriptación de contraseñas
 import CustomRouter from './routes/customRouter.js'; // enrutador personalizado
@@ -172,6 +172,7 @@ import UsersRouter from './routes/userModel.router.js'
 import MessagesRouter from './routes/messagesModel.router.js';
 import CookiesRouter from './routes/cookies.router.js'
 import GithubRouter from './routes/github.router.js';
+import { generateProducts } from './middleware/mock.js';
 
 dotenv.config();
 
@@ -220,44 +221,14 @@ app.use((req, res, next) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Endpoint para obtener productos ficticios
+app.get('/mockingproducts', (req, res) => {
+  const products = generateProducts(); // Genera 100 productos ficticios
+  res.render('FakeProductList', { productos: products });
+});
+
 // Rutas definidas en el enrutador personalizado
 app.use('/customRoutePath', customRouter.getRouter());
-
-// // Registro de usuarios en memoria
-// app.post('/registro', async (req, res) => {
-//   const { name, email, password, role } = req.body;
-//   const exists = users.find(user => user.email === email);
-  
-//   if (exists) {
-//     return res.status(400).send({ status: 'error', error: 'Este usuario ya existe' });
-//   }
-  
-//   const hashedPassword = await bcrypt.hash(password, 10); 
-  
-//   const user = {
-//     name,
-//     email,
-//     password: hashedPassword,
-//     role
-//   };
-  
-//   users.push(user);
-  
-//   const accessToken = generateToken({ email, role });
-  
-//   res.send({ status: 'success', accessToken });
-// });
-
-// Autenticación de usuarios
-// app.post('/login', (req, res) => {
-//   const { email, password } = req.body;
-//   const user = users.find(user => user.email === email && bcrypt.compareSync(password, user.password));
-//   if (!user) {
-//     return res.status(400).send({ status: 'error', error: 'Credenciales inválidas' });
-//   }
-//   const access_token = generateToken(user);
-//   res.send({ status: 'success', access_token });
-// });
 
 // Ruta protegida que solo muestra datos del usuario autenticado
 app.get('/current', passport.authenticate('jwt', { session: false }), authorization, (req, res) => {
