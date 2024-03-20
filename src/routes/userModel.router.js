@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import User from '../models/user.model.js';
 import {generateToken} from '../utilidades/token.js'
 import CustomError from '../services/CustomErrors.js';
-import { generateUserErrorInfo } from '../services/info.js';
+import {generateUserErrorInfo} from '../services/info.js';
 import EErrors from '../services/enums.js';
 
 class UsersRouter extends CustomRouter {
@@ -33,19 +33,22 @@ class UsersRouter extends CustomRouter {
                 } = req.body;
 
                 if (!email || !name || !lastName || !age || !password) {
-                    CustomError.createError({
+                    const error = CustomError.createError({
                         name: 'creación del usuario errónea',
-                        cause: generateUserErrorInfo({name, lastName, age, email}),
+                        cause: generateUserErrorInfo({
+                            name,
+                            lastName,
+                            age,
+                            email
+                        }),
                         message: 'Error al intentar crear un usuario',
-                        code:EErrors.INVALID_TYPES_ERROR
-                    })
-                    throw error;
+                        code: EErrors.INVALID_TYPES_ERROR
+                    });
+                    throw error;                
                 }
 
                 // Verificar si el correo electrónico ya está registrado
-                const existingUser = await User.findOne({
-                    email
-                });
+                const existingUser = await User.findOne({ email});
                 if (existingUser) {
                     return res.status(400).json({
                         message: 'Este correo ya está registrado'
@@ -101,30 +104,50 @@ class UsersRouter extends CustomRouter {
 
         // Ruta para autenticar al usuario e iniciar sesión
         this.post('/login', async (req, res) => {
-            const { email, password } = req.body;
-        
+            const {
+                email,
+                password
+            } = req.body;
+            console.log('esto trae el req.body: ', email, password);
+
             try {
-                const user = await User.findOne({ email });
-        
+                const user = await User.findOne({
+                    email
+                });
+
                 if (!user) {
-                    return res.status(401).json({ error: 'Correo electrónico no encontrado en la base de datos' });
+                    return res.status(401).json({
+                        error: 'Correo electrónico no encontrado en la base de datos'
+                    });
                 }
-        
+
                 const passwordMatch = await bcrypt.compare(password, user.password);
-        
+
                 if (!passwordMatch) {
-                    return res.status(401).json({ error: 'Contraseña incorrecta' });
+                    return res.status(401).json({
+                        error: 'Contraseña incorrecta'
+                    });
                 }
-        
+
                 // Generar el token JWT para el usuario
-                const access_token = generateToken({ _id: user._id, name: user.name, email: user.email, role: user.role });
-        console.log('access token generado en userModel.router', access_token)
-        res.status(200).json({ access_token, redirectURL: '/products' }); // Redirigi a la página de productos después de autenticar al usuario
+                const access_token = generateToken({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                });
+                console.log('access token generado en userModel.router', access_token)
+                res.status(200).json({
+                    access_token,
+                    redirectURL: '/products'
+                }); // Redirige a la página de productos después de autenticar al usuario
             } catch (error) {
                 console.error(error); // Imprimir el error completo en la consola del servidor
-                res.status(500).json({ error: 'Error en el servidor al intentar iniciar sesión' }); // Respuesta genérica de error
+                res.status(500).json({
+                    error: 'Error en el servidor al intentar iniciar sesión'
+                }); // Respuesta genérica de error
             }
-        });    
+        });
 
         // Ruta para modificar un usuario por su id
         this.put("/:id", async (req, res) => {

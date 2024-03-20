@@ -2,6 +2,7 @@ import { productModel } from "../models/products.model.js";
 import CustomRouter from "../routes/customRouter.js";
 import handlePolicies from "../middleware/handlePolicies.js"; // manejo de las políticas de acceso para cada rol
 import { generateToken, authToken, verifyToken } from '../utilidades/token.js';
+import { generateProductErrorInfo } from "../services/info.js";
 
 class ProductsRouter extends CustomRouter {
   constructor() {
@@ -84,6 +85,21 @@ class ProductsRouter extends CustomRouter {
     this.post('/',authToken,verifyToken,handlePolicies(['admin', 'superadmin']), async (req, res) => {
       try {
         const { title, description, price, thumbnail, code, stock } = req.body;
+        if (!title || !description || !price || !thumbnail || !code ||!stock) {
+          const error = CustomError.createError({
+              name: 'creación del producto errónea',
+              cause: generateProductErrorInfo({
+                title,
+                stock,
+                description,
+                price,
+                thumbnail
+              }),
+              message: 'Error al intentar crear un producto',
+              code: EErrors.INVALID_TYPES_ERROR
+          });
+          throw error;                
+      }
             const newProduct = new productModel({
               title,
               description,
