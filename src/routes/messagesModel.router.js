@@ -2,7 +2,7 @@ import { messagesModel } from "../models/messages.model.js";
 import CustomRouter from "../routes/customRouter.js";
 import twilio from 'twilio'; // envío de mensajería en general (SMS en este caso)
 import nodemailer from 'nodemailer'; // envío de correos (gmail en este caso)
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
 dotenv.config()
 
@@ -128,7 +128,7 @@ this.post('/sms', async (req, res) => {
   }
   try {
     let result = await twilioClient.messages.create({
-      body: 'SMS desde Twilio',
+      body: body,
       from: process.env.TWILIO_SMS_NUMBER,
       to: to
     });
@@ -141,18 +141,19 @@ this.post('/sms', async (req, res) => {
 
 //envío de correos desde Gmail
 this.post('/mail', async (req,res) => {
-  const {email, name} = req.body
+  const {email, name, body} = req.body
 let result = await transport.sendMail({
-  from: `Coder Test <${USER_GMAIL}>`,
+  from: `Coder Test <${process.env.USER_GMAIL}>`,
   to: email,
   subject: `Hola ${name}!! este es un correo de prueba`,
   html:`
   <div>
-  <h1>${name}, este es un correo de prueba! no hace falta que respondas</h1>
+  <h1>${name}, ${body}</h1>
   </div>
   `,
   attachments:[]
 })
+console.log(process.env.USER_GMAIL)
 res.send({status:"success", result: "email enviado"})
 })
   }}
