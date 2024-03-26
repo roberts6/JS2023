@@ -151,6 +151,7 @@
 //     process.exit(1);
 //   });
 
+
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -173,6 +174,8 @@ import MessagesRouter from './routes/messagesModel.router.js';
 import CookiesRouter from './routes/cookies.router.js'
 import GithubRouter from './routes/github.router.js';
 import { generateProducts } from './middleware/mock.js';
+import winston from 'winston';
+import logger from './utilidades/logger.js';
 
 dotenv.config();
 
@@ -251,6 +254,18 @@ app.get('/user-info', (req, res) => {
   } else {
     res.status(401).send('Usuario no autenticado');
   }
+});
+
+// prueba de loggers
+app.get('/loggerTest', (req, res) => {
+  logger.debug('Este es un mensaje de depuración');
+  logger.info('Este es un mensaje informativo');
+  logger.warning('Este es un mensaje de advertencia');
+  logger.error('Este es un mensaje de error');
+  logger.fatal('Este es un mensaje de error fatal');
+  logger.http('Este es un mensaje http');
+
+  res.json({ message: 'Loggers probados exitosamente' });
 });
 
 app.use('/products', ProductsRouter);

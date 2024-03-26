@@ -6,6 +6,7 @@ import {generateToken} from '../utilidades/token.js'
 import CustomError from '../services/CustomErrors.js';
 import {generateUserErrorInfo} from '../services/info.js';
 import EErrors from '../services/enums.js';
+import  logger  from '../utilidades/logger.js';
 
 class UsersRouter extends CustomRouter {
     constructor() {
@@ -70,13 +71,14 @@ class UsersRouter extends CustomRouter {
                 // Guardar el nuevo usuario en la base de datos
                 await newUser.save();
                 // Mostrar el usuario creado en la consola
-                console.log('Usuario registrado con éxito:', newUser);
+                //console.log('Usuario registrado con éxito:', newUser);
+                logger.info('Usuario registrado con éxito:', { newUser: newUser.toObject() }); // logger.js
 
                 res.render('registroExitoso', {
                     user: newUser
                 }, (err, html) => {
                     if (err) {
-                        console.error(err);
+                        logger.error('Error en el servidor:', err); // logger.js
                         return res.status(500).json({
                             message: 'Error en el servidor: ' + err.message
                         });
@@ -90,7 +92,7 @@ class UsersRouter extends CustomRouter {
                         message: error.message || 'Se produjo un error al crear el usuario.'
                     })
                 }
-                console.error(error);
+                logger.error('Error durante el proceso de registro:',  error) //logger.js
                 res.status(500).json({
                     message: 'Error en el servidor: ' + error.message
                 })
@@ -136,7 +138,7 @@ class UsersRouter extends CustomRouter {
                     email: user.email,
                     role: user.role
                 });
-                console.log('access token generado en userModel.router', access_token)
+                logger.info('Access token generado:', access_token); // logger.js
                 res.status(200).json({
                     access_token,
                     redirectURL: '/products'
@@ -185,6 +187,7 @@ class UsersRouter extends CustomRouter {
                     data: updatedUser
                 });
             } catch (error) {
+                logger.error('Error al actualizar el usuario:', error); // usando logger.js
                 res.status(500).json({
                     error: 'Error al actualizar el usuario'
                 });
@@ -211,6 +214,7 @@ class UsersRouter extends CustomRouter {
                     data: deletedUser
                 });
             } catch (error) {
+                logger.error('Error al eliminar el usuario:', error); // logger.js
                 res.status(500).json({
                     error: 'Error al eliminar el usuario'
                 });

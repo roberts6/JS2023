@@ -40,10 +40,23 @@ class GithubRouter extends CustomRouter {
     this.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
 // Callback de Github
-this.get('/callback', (req, res) => {
-  // Maneja el callback de GitHub aquí
-  res.send('Callback de GitHub');
+this.get('/github/callback', (req, res, next) => {
+  passport.authenticate('github', (err, user, info) => {
+    if (err) {
+      return next(err); // Manejar errores de autenticación
+    }
+    if (!user) {
+      return res.redirect('/login'); // Redirigir si la autenticación falla
+    }
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/'); // Redirigir al inicio de la aplicación después de la autenticación exitosa
+    });
+  })(req, res, next);
 });
+
 
 // Actualiza las rutas de registro y login para utilizar Passport
 this.post('/registro', passport.authenticate('local', {

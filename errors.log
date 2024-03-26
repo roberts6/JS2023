@@ -1,0 +1,5 @@
+{"level":"debug","message":"Este es un mensaje de depuración"}
+{"level":"info","message":"Este es un mensaje informativo"}
+{"level":"warning","message":"Este es un mensaje de advertencia"}
+{"level":"error","message":"Este es un mensaje de error"}
+{"level":"http","message":"Este es un mensaje http"}
