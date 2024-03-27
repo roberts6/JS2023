@@ -3,6 +3,7 @@ import CustomRouter from "../routes/customRouter.js";
 import twilio from 'twilio'; // envío de mensajería en general (SMS en este caso)
 import nodemailer from 'nodemailer'; // envío de correos (gmail en este caso)
 import dotenv from 'dotenv';
+import logger from "../utilidades/logger.js";
 
 dotenv.config()
 
@@ -141,11 +142,12 @@ this.post('/sms', async (req, res) => {
 
 //envío de correos desde Gmail
 this.post('/mail', async (req,res) => {
-  const {email, name, body} = req.body
+  const {email, name, subject, body} = req.body
+
 let result = await transport.sendMail({
   from: `Coder Test <${process.env.USER_GMAIL}>`,
   to: email,
-  subject: `Hola ${name}!! este es un correo de prueba`,
+  subject: `Hola ${name}! ${subject}`,
   html:`
   <div>
   <h1>${name}, ${body}</h1>
@@ -153,7 +155,7 @@ let result = await transport.sendMail({
   `,
   attachments:[]
 })
-console.log(process.env.USER_GMAIL)
+logger.info('Mail usado para el envío de correo: ',process.env.USER_GMAIL)
 res.send({status:"success", result: "email enviado"})
 })
   }}

@@ -47,15 +47,17 @@ const passportConfig = (passport) => {
       try {
         console.log('este es el profile que trae github ',profile)
         let user = await User.findOne({ githubId: profile.id });
-        if (!user) {
-          // Busca un usuario con el mismo email
-          user = await User.findOne({ email: profile.emails && profile.emails[0].value });
+      if (!user) {
+        let email = profile.emails && profile.emails[0].value;
+        if (email) {
+          user = await User.findOne({ email: email });
+        }}
           
           // Si no existe, crea un nuevo usuario con la información de GitHub
           if (!user) {
             user = await User.create({ 
               name: profile.displayName || profile.username,
-              email: profile.emails && profile.emails[0].value,
+              email: email,
               githubId: profile.id,
               password: '', 
               role: 'user' // Rol por defecto
@@ -65,7 +67,7 @@ const passportConfig = (passport) => {
             user.githubId = profile.id;
             await user.save();
           }
-        }
+        
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -76,7 +78,7 @@ const passportConfig = (passport) => {
   passport.use(new JwtStrategy(jwtConfig, async (jwt_payload, done) => {
     try {
       // le asigna el valor buscando por ID. Este sub lo definí en token.js línea 7
-      const user = await User.findById(jwt_payload.sub); 
+      const user = await User.findById(jwt_payload.sub);
       
       if (user) {
         return done(null, user);
@@ -92,11 +94,14 @@ const passportConfig = (passport) => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
-
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-      done(err, user);
-    });
+  
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id);
+      done(null, user);
+    } catch (err) {
+      done(err, null);
+    }
   });
 }
 
