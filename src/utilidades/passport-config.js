@@ -38,81 +38,42 @@ const passportConfig = (passport) => {
   );
 
   // Estrategia de GitHub
-  // passport.use(new GitHubStrategy({
-  //     clientID: process.env.GITHUB_CLIENT_ID,
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  //     callbackURL: "http://localhost:3000/auth/github/callback"
-  //   },
-  //   async (accessToken, refreshToken, profile, done) => {
-  //     try {
-  //       console.log('este es el profile que trae github ',profile)
-  //       let user = await User.findOne({ githubId: profile.id });
-  //     if (!user) {
-  //       let email = profile.emails && profile.emails[0].value;
-  //       if (email) {
-  //         user = await User.findOne({ email: email });
-  //       }}
-          
-  //         // Si no existe, crea un nuevo usuario con la información de GitHub
-  //         if (!user) {
-  //           user = await User.create({ 
-  //             name: profile.displayName || profile.username,
-  //             email: email,
-  //             githubId: profile.id,
-  //             password: '', 
-  //             role: 'user' // Rol por defecto
-  //           });
-  //         } else {
-  //           // Si existe un usuario con esa dirección de correo, actualiza con el githubId
-  //           user.githubId = profile.id;
-  //           await user.save();
-  //         }
-        
-  //       return done(null, user);
-  //     } catch (err) {
-  //       return done(err);
-  //     }
-  //   }
-  // ));
   passport.use(new GitHubStrategy({
-    clientID: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/github/callback"
-  },
-  async (accessToken, refreshToken, profile, done) => {
-    try {
-      // Aquí puedes agregar tu lógica de autenticación con GitHub
-      console.log('Este es el perfil que trae GitHub:', profile);
-
-      let user = await User.findOne({ githubId: profile.id });
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/github/callback"
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        console.log('este es el profile que trae github ',profile)
+        let user = await User.findOne({ githubId: profile.id });
       if (!user) {
-        let email = (profile.emails && profile.emails[0].value);
+        let email = profile.emails && profile.emails[0].value;
         if (email) {
           user = await User.findOne({ email: email });
-        }
+        }}
+          
+          // Si no existe, crea un nuevo usuario con la información de GitHub
+          if (!user) {
+            user = await User.create({ 
+              name: profile.displayName || profile.username,
+              email: email,
+              githubId: profile.id,
+              password: '', 
+              role: 'user' // Rol por defecto
+            });
+          } else {
+            // Si existe un usuario con esa dirección de correo, actualiza con el githubId
+            user.githubId = profile.id;
+            await user.save();
+          }
+        
+        return done(null, user);
+      } catch (err) {
+        return done(err);
       }
-
-      if (!user) {
-        user = await User.create({
-          name: profile.displayName || profile.username,
-          email: email || '',
-          githubId: profile.id,
-          password: '',
-          role: 'user'
-        });
-      } else {
-        user.githubId = profile.id;
-        await user.save();
-      }
-
-      // Redirigir al usuario al login de GitHub
-      return done(null, user);
-    } catch (err) {
-      return done(err);
     }
-  }
-));
-
+  ));
 
 
   passport.use(new JwtStrategy(jwtConfig, async (jwt_payload, done) => {

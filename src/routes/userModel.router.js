@@ -105,51 +105,87 @@ class UsersRouter extends CustomRouter {
         });
 
         // Ruta para autenticar al usuario e iniciar sesión
+        // this.post('/login', async (req, res) => {
+        //     const {
+        //         email,
+        //         password
+        //     } = req.body;
+        //     console.log('esto trae el req.body: ', email, password);
+
+        //     try {
+        //         const user = await User.findOne({
+        //             email
+        //         });
+
+        //         if (!user) {
+        //             return res.status(401).json({
+        //                 error: 'Correo electrónico no encontrado en la base de datos'
+        //             });
+        //         }
+
+        //         const passwordMatch = await bcrypt.compare(password, user.password);
+
+        //         if (!passwordMatch) {
+        //             return res.status(401).json({
+        //                 error: 'Contraseña incorrecta'
+        //             });
+        //         }
+
+        //         // Generar el token JWT para el usuario
+        //         const access_token = generateToken({
+        //             _id: user._id,
+        //             name: user.name,
+        //             email: user.email,
+        //             role: user.role
+        //         });
+        //         logger.info('Access token generado:', access_token); // logger.js
+        //         res.status(200).json({
+        //             access_token,
+        //             redirectURL: '/products'
+        //         }); // Redirige a la página de productos después de autenticar al usuario
+        //     } catch (error) {
+        //         console.error(error); // Imprimir el error completo en la consola del servidor
+        //         res.status(500).json({
+        //             error: 'Error en el servidor al intentar iniciar sesión'
+        //         }); // Respuesta genérica de error
+        //     }
+        // });
         this.post('/login', async (req, res) => {
-            const {
-                email,
-                password
-            } = req.body;
+            const { email, password } = req.body;
             console.log('esto trae el req.body: ', email, password);
-
+        
             try {
-                const user = await User.findOne({
-                    email
-                });
-
+                const user = await User.findOne({ email });
+        
                 if (!user) {
-                    return res.status(401).json({
-                        error: 'Correo electrónico no encontrado en la base de datos'
-                    });
+                    return res.status(401).json({ error: 'Correo electrónico no encontrado en la base de datos' });
                 }
-
+        
                 const passwordMatch = await bcrypt.compare(password, user.password);
-
+        
                 if (!passwordMatch) {
-                    return res.status(401).json({
-                        error: 'Contraseña incorrecta'
-                    });
+                    return res.status(401).json({ error: 'Contraseña incorrecta' });
                 }
-
-                // Generar el token JWT para el usuario
-                const access_token = generateToken({
+        
+                // Autenticación exitosa, genera el token JWT
+                const tokenPayload = {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
                     role: user.role
-                });
-                logger.info('Access token generado:', access_token); // logger.js
-                res.status(200).json({
-                    access_token,
-                    redirectURL: '/products'
-                }); // Redirige a la página de productos después de autenticar al usuario
+                };
+        
+                const access_token = generateToken(tokenPayload);
+                logger.info('Access token generado:', access_token);
+        
+                // Redirige a la página de productos después de autenticar al usuario
+                res.status(200).json({ access_token, redirectURL: '/products' });
             } catch (error) {
-                console.error(error); // Imprimir el error completo en la consola del servidor
-                res.status(500).json({
-                    error: 'Error en el servidor al intentar iniciar sesión'
-                }); // Respuesta genérica de error
+                console.error(error);
+                res.status(500).json({ error: 'Error en el servidor al intentar iniciar sesión' });
             }
         });
+        
 
         // Ruta para modificar un usuario por su id
         this.put("/:id", async (req, res) => {

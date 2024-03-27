@@ -87,52 +87,51 @@
             </form>
         </div>
     </div>
-
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            try {
-                const response = await fetch('http://localhost:3000/user/login', {
-                    method: 'POST',
+        try {
+            const response = await fetch('http://localhost:3000/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json(); // Obtener los datos de la respuesta JSON
+            console.log('esta es la data ', data);
+
+            // Verificar si se recibió un token de autorización en la respuesta
+            if (data.access_token) {
+                localStorage.setItem('token', data.access_token);
+
+                const token = localStorage.getItem('token');
+                const protectedResponse = await fetch('http://localhost:3000/user/protected', {
+                    method: 'GET',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password }),
                 });
 
-                const data = await response.json(); // Obtener los datos de la respuesta JSON
-                console.log('esta es la data ', data)
-
-                // Verificar si se recibió un token de autorización en la respuesta
-                if (data.access_token) {
-                    // Almacenar el token en el almacenamiento local del navegador
-                    localStorage.setItem('token', data.access_token);
-
-                    // Realizar una solicitud a una ruta protegida incluyendo el token de autorización
-                    const token = localStorage.getItem('token');
-                    const protectedResponse = await fetch('http://localhost:3000/user/login', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(data => console.log(data))
-                        .catch(error => console.error(error));
-
-                    if (protectedResponse.redirected) {
-                        window.location.replace(protectedResponse.url); // Redirigir a la URL proporcionada por el servidor
-                    }
+                if (protectedResponse.ok) {
+                    const responseData = await protectedResponse.json();
+                    console.log(responseData);
+                } else {
+                    console.error('Error al intentar acceder a la ruta protegida.');
                 }
-            } catch (error) {
-                console.error('Error al iniciar sesión:', error);
+            } else {
+                console.error('No se recibió un token de autorización.');
             }
-        });
-    </script>
-</body>
+        } catch (error) {
+            console.error('Error al iniciar sesión:', error);
+        }
+    });
+</script>
 
+</body>
 </html>

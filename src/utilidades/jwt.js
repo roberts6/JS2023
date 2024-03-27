@@ -13,7 +13,7 @@ passport.use(new Strategy(options, (payload, done) => {
   User.findById(payload) 
     .then(user => {
       if (user) {
-        // El usuario ha sido encontrado en la base de datos
+        // El usuario fue encontrado en la base de datos
         return done(null, user);
       } else {
         // El usuario no fue encontrado
