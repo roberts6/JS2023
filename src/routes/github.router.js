@@ -52,7 +52,7 @@ this.get('/github/callback', (req, res, next) => {
       if (err) {
         return next(err);
       }
-      return res.redirect('/'); // Redirigir al inicio de la aplicación después de la autenticación exitosa
+      return res.redirect('/callback'); // Redirigir al inicio de la aplicación después de la autenticación exitosa
     });
   })(req, res, next);
 });

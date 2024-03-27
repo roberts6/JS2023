@@ -39,7 +39,7 @@ const logger = winston.createLogger({
         }),
         new winston.transports.File({ 
             filename: './errors.log',
-            level: 'error' // en este caso todo lo que sea de error o mayor se guarda en el archivo
+            level: 'error' // en este caso todo lo que sea de error o mayor (warning, info, http, debug) se guarda en el archivo
         })
     ]
 });
