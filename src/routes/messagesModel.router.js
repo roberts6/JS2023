@@ -4,6 +4,7 @@ import twilio from 'twilio'; // envío de mensajería en general (SMS en este ca
 import nodemailer from 'nodemailer'; // envío de correos (gmail en este caso)
 import dotenv from 'dotenv';
 import logger from "../utilidades/logger.js";
+import crypto from 'crypto';
 
 dotenv.config()
 
@@ -158,6 +159,39 @@ let result = await transport.sendMail({
 logger.info('Mail usado para el envío de correo: ',process.env.USER_GMAIL)
 res.send({status:"success", result: "email enviado"})
 })
+
+// Solicitar la recuperación de contraseña
+this.post('/requestPasswordReset', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpire = Date.now() + 3600000; // 1 hora desde ahora
+    
+    await userModel.findByIdAndUpdate(user._id, { resetToken, resetTokenExpire });
+
+    const resetURL = `http://localhost:3000/resetPassword/${resetToken}`;
+    
+    // Envío del correo
+    let result = await transport.sendMail({
+      from: `Soporte <${process.env.USER_GMAIL}>`,
+      to: email,
+      subject: 'Recuperación de contraseña',
+      html: `
+        <h2>Para restablecer tu contraseña, por favor sigue el siguiente enlace:</h2>
+        <a href="${resetURL}" target="_blank">Restablecer Contraseña</a>
+        <p>Este enlace expirará en 1 hora 🕣.</p>
+      `,
+    });
+
+    res.json({ status: "success", message: "Instrucciones enviadas al correo." });
+  } catch (error) {
+    res.status(500).json({ error: "Error interno." });
+  }
+});
   }}
 
 
