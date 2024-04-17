@@ -25,6 +25,17 @@ import logger from './utilidades/logger.js';
 
 dotenv.config();
 
+const swaggerOptions = { // configuración de opciones de Swagger
+  definition:{
+openapi:'3.0.1',
+info:{
+title: 'Documentación de mi API',
+description: 'API destinada a e-commerce'
+} 
+  },
+ apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const DB_URL = process.env.DB_ATLAS;
@@ -39,7 +50,8 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static('public'));
-
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs)) // conección de swagger con el servidor
 
 app.engine('handlebars', engine({
   runtimeOptions: {

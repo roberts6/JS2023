@@ -1,0 +1,174 @@
+openapi: 3.0.1
+info:
+  title: API de Carritos
+  description: API para la gestión de carritos de compras.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000/api'
+
+paths:
+  /carts/{cid}:
+    get:
+      summary: Obtiene un carrito por ID
+      description: Retorna detalles completos de un carrito específico basado en su ID.
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: El ID del carrito
+      responses:
+        '200':
+          description: Carrito encontrado y retornado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/routes/cart.router.js'
+        '404':
+          description: Carrito no encontrado.
+
+    put:
+      summary: Actualiza un carrito completo
+      description: Reemplaza todos los productos en un carrito específico con los productos proporcionados.
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: El ID del carrito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/routes/cart.router.js'
+      responses:
+        '200':
+          description: Carrito actualizado exitosamente.
+        '404':
+          description: Carrito no encontrado.
+
+    delete:
+      summary: Elimina un carrito
+      description: Elimina todos los productos de un carrito específico.
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: El ID del carrito
+      responses:
+        '200':
+          description: Productos eliminados del carrito exitosamente.
+        '404':
+          description: Carrito no encontrado.
+
+  /carts/{cid}/products/{pid}:
+    delete:
+      summary: Elimina un producto específico del carrito
+      description: Elimina un producto específico por ID dentro de un carrito.
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: El ID del carrito
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: El ID del producto
+      responses:
+        '200':
+          description: Producto eliminado del carrito exitosamente.
+        '404':
+          description: Carrito o producto no encontrado.
+
+    put:
+      summary: Actualiza la cantidad de un producto en el carrito
+      description: Actualiza la cantidad de un producto específico en el carrito.
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: El ID del carrito
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: El ID del producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: La nueva cantidad del producto.
+      responses:
+        '200':
+          description: Cantidad del producto actualizada exitosamente.
+        '400':
+          description: Cantidad inválida proporcionada.
+        '404':
+          description: Carrito o producto no encontrado.
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1'
+        items:
+          type: array
+          items:
+            $ref: '#/routes/cart.router.js'
+        total:
+          type: number
+          example: 150.50
+        id_usuario:
+          type: string
+          example: 'usuario123'
+        fecha_creacion:
+          type: string
+          format: date-time
+          example: '2021-04-12T23:20:50.52Z'
+
+    CartUpdateRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/routes/cart.router.js'
+
+    Product:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 'prod123'
+            name:
+              type: string
+              example: 'Producto 123'
+            price:
+              type: number
+              example: 20.00
+        quantity:
+          type: integer
+          example: 2

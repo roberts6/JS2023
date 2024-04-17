@@ -1,0 +1,168 @@
+openapi: 3.0.1
+info:
+  title: API de productos
+  description: API para la gestión de productos.
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000'
+
+paths:
+  /products:
+    get:
+      summary: Listado de productos y diferentes posibilidades
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: número de productos recibidos
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: número de página
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: orden basado en precio
+        - in: query
+          name: filter
+          schema:
+            type: object
+            additionalProperties: true
+          style: deepObject
+          explode: true
+          description: Filtrado de productos por alguna de sus propiedades
+      responses:
+        '200':
+          description: listado de productos obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/routes/productsModel.router.js'
+
+    post:
+      summary: Crea nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/routes/productsModel.router.js'
+      responses:
+        '201':
+          description: Producto creado ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/routes/productsModel.router.js'
+
+  /products/{id}:
+    get:
+      summary: devuelve un producto por su ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del producto a fetchear
+      responses:
+        '200':
+          description: producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/routes/productsModel.router.js'
+        '404':
+          description: Producto no encontrado
+          
+    put:
+      summary: Actualizar producto por su ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del producto a actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/routes/productsModel.router.js'
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/routes/productsModel.router.js'
+        '404':
+          description: Producto no encontrado
+
+    delete:
+      summary: Borrar producto por su ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del producto a borrar
+      responses:
+        '200':
+          description: Producto borrado
+        '404':
+          description: Producto no encontrado
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: string
+        code:
+          type: string
+        gender:
+          type: string
+        stock:
+          type: integer
+
+    ProductInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: string
+        code:
+          type: string
+        gender:
+          type: string
+        stock:
+          type: integer
+
+    ProductArray:
+      type: object
+      properties:
+        products:
+          type: array
