@@ -39,7 +39,10 @@
     "winston": "^3.13.0"
   },
   "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
     "nodemon": "^2.0.0",
+    "supertest": "^7.0.0",
     "watch": "^0.13.0"
   }
 }
