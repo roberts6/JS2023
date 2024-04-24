@@ -1,10 +1,9 @@
 import supertest from 'supertest';
-import chai from 'chai';
+import { expect, assert, should } from 'chai';
 import mocha from 'mocha';
 import mongoose from 'mongoose';
 import { app } from '../src/app.js';  
 
-const expect = chai.expect;
 const request = supertest(app);
 
 describe('Users Router', function() {
@@ -24,8 +23,8 @@ describe('Users Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Usuario registrado');
-          expect(res.body.user).to.include({
+          chai.expect(res.body).to.have.property('message', 'Usuario registrado');
+          chai.expect(res.body.user).to.include({
             email: newUser.email,
             name: newUser.name,
             lastName: newUser.lastName,
@@ -49,7 +48,7 @@ describe('Users Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('access_token');
+          chai.expect(res.body).to.have.property('access_token');
           done();
         });
     });
@@ -57,7 +56,7 @@ describe('Users Router', function() {
 
   describe('PUT /user/:id', function() {
     it('debe actualizar un usuario existente', function(done) {
-      const userId = "65ce73b46aace7c6bd38acfe";  // Un ID de usuario válido
+      const userId = "65ce73b46aace7c6bd38acfe";  
       const updates = {
         email: "updated@example.com",
         password: "newpassword123",
@@ -71,7 +70,7 @@ describe('Users Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Usuario actualizado');
+          chai.expect(res.body).to.have.property('message', 'Usuario actualizado');
           done();
         });
     });
@@ -79,14 +78,14 @@ describe('Users Router', function() {
 
   describe('DELETE /user/:id', function() {
     it('debe eliminar un usuario existente', function(done) {
-      const userId = "65ce73b46aace7c6bd38acfe";  // Un ID de usuario válido
+      const userId = "65ce73b46aace7c6bd38acfe";  
 
       request
         .delete(`/user/${userId}`)
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Usuario eliminado');
+          chai.expect(res.body).to.have.property('message', 'Usuario eliminado');
           done();
         });
     });

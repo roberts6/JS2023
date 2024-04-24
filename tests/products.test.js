@@ -1,17 +1,18 @@
 // bibliotecas necesarias
 import supertest from 'supertest';
-import chai from 'chai';
+import { expect } from 'chai';
+import { assert } from 'chai';
+import { should } from 'chai';
 import mocha from 'mocha';
 import mongoose from 'mongoose';
-import { app } from '../src/app.js';  
+import { app } from '../src/app.js';
 
-const expect = chai.expect;
-const request = supertest(app); 
+const request = supertest(app);
 
 describe('Product Router', function() {
   beforeEach(function() {
     mongoose.connection.collections.products.drop();
-this.timeout(5000);
+    this.timeout(5000);
   });
 
   describe('GET /products', function() {
@@ -22,7 +23,7 @@ this.timeout(5000);
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.be.an('array');
+          chai.expect(res.body).to.be.an('array'); 
           done();
         });
     });
@@ -46,8 +47,8 @@ this.timeout(5000);
         .expect(201)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message');
-          expect(res.body.message).to.equal('Producto creado');
+          chai.expect(res.body).to.have.property('message'); 
+          chai.expect(res.body.message).to.equal('Producto creado'); 
           done();
         });
     });
@@ -55,15 +56,15 @@ this.timeout(5000);
 
   describe('DELETE /products/:id', function() {
     it('debe eliminar un producto', function(done) {
-      const productId = '65a8773b0c04dc30c1c7746d';  // ID real de mi base de datos
+      const productId = '65a8773b0c04dc30c1c7746d'; // ID real de mi base de datos
 
       request
         .delete(`/products/${productId}`)
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message');
-          expect(res.body.message).to.equal('Producto eliminado');
+          chai.expect(res.body).to.have.property('message'); 
+          chai.expect(res.body.message).to.equal('Producto eliminado'); 
           done();
         });
     });

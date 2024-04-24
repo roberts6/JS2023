@@ -139,4 +139,4 @@ mongoose.connect(DB_URL)
   });
 
 
-
+export {app};

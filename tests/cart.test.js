@@ -1,10 +1,11 @@
 import supertest from 'supertest';
-import chai from 'chai';
+import { expect } from 'chai';
+import { assert } from 'chai';
+import { should } from 'chai';
 import mocha from 'mocha';
 import mongoose from 'mongoose';
 import { app } from '../src/app.js';  
 
-const expect = chai.expect;
 const request = supertest(app);
 
 describe('Carts Router', function() {
@@ -19,7 +20,7 @@ describe('Carts Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Carrito actualizado exitosamente');
+          chai.expect(res.body).to.have.property('message', 'Carrito actualizado exitosamente');
           done();
         });
     });
@@ -35,7 +36,7 @@ describe('Carts Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Producto eliminado del carrito exitosamente');
+          chai.expect(res.body).to.have.property('message', 'Producto eliminado del carrito exitosamente');
           done();
         });
     });
@@ -53,7 +54,7 @@ describe('Carts Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Cantidad del producto actualizada exitosamente');
+          chai.expect(res.body).to.have.property('message', 'Cantidad del producto actualizada exitosamente');
           done();
         });
     });
@@ -68,9 +69,10 @@ describe('Carts Router', function() {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.body).to.have.property('message', 'Todos los productos han sido eliminados del carrito exitosamente');
+          chai.expect(res.body).to.have.property('message', 'Todos los productos han sido eliminados del carrito exitosamente');
           done();
         });
     });
   });
 });
+
