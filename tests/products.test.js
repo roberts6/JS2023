@@ -1,8 +1,6 @@
 // bibliotecas necesarias
 import supertest from 'supertest';
-import { expect } from 'chai';
-import { assert } from 'chai';
-import { should } from 'chai';
+import { expect, assert, should } from 'chai';
 import mocha from 'mocha';
 import mongoose from 'mongoose';
 import { app } from '../src/app.js';
