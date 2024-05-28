@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ['user', 'admin', 'superadmin'], // Lista de roles permitidos
+    enum: ['user', 'admin', 'superadmin', 'Premium'], // Lista de roles permitidos
     default: 'user', // Valor por defecto si no se provee uno
     index: true
   },

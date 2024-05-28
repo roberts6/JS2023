@@ -18,3 +18,27 @@
 {"level":"info","message":"Access token generado:"}
 {"level":"info","message":"Access token generado:"}
 {"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Access token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Token generado:"}
+{"level":"info","message":"Usuario registrado con éxito:","newUser":{"__v":0,"_id":"6644f1346efa6bbfc3c40f0b","age":3,"createdAt":"2024-05-15T17:30:28.028Z","email":"broberts@gmail.com","lastName":"roberts","name":"benicio","password":"$2b$10$FtIcik9jRCtyPXENl6urZe1zXIX3YkxkKhdZ2HjMla0E8x8ls/qkW","role":"user","updatedAt":"2024-05-15T17:30:28.028Z"}}
+{"level":"info","message":"Usuario registrado con éxito:","newUser":{"__v":0,"_id":"6644f391fee14988bd47d333","age":3,"createdAt":"2024-05-15T17:40:33.112Z","email":"broberts@gmail.com","lastName":"roberts","name":"benicio","password":"$2b$10$oY56kBOoInlQgVfyduDKvOJVB54G8q3iOzZsq.Ri6Ah109X9V448u","role":"user","updatedAt":"2024-05-15T17:40:33.112Z"}}
+{"level":"info","message":"Usuario registrado con éxito:","newUser":{"__v":0,"_id":"6644f3ca40604f913cfa63c8","age":3,"createdAt":"2024-05-15T17:41:30.639Z","email":"broberts@gmail.com","lastName":"roberts","name":"benicio","password":"$2b$10$BrUtmbKB15YlyHX85c.hAe5C0AZ7pfUx/PAA0viDiyhtHeA7aECbK","role":"user","updatedAt":"2024-05-15T17:41:30.639Z"}}
+{"level":"info","message":"Token generado:"}

@@ -1,9 +1,22 @@
 import express from 'express';
 import { readFile, writeFile, generateId } from '../utils/fileUtils';
+import handlePolicies from '../middleware/handlePolicies.js';
+import nodemailer from 'nodemailer';
+import Product from '../models/products.model.js';
+import User from '../models/user.model.js';
 
 const productsRouter = express.Router();
 
-productsRouter.get('/', async (req, res) => {
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.USER_GMAIL,
+    pass: process.env.PASS_GMAIL
+  }
+});
+
+// Proteger esta ruta solo para usuarios con roles 'user' y 'admin'
+productsRouter.get('/', handlePolicies(['user', 'admin']), async (req, res) => {
   try {
     const data = await readFile('productos.json');
     const products = JSON.parse(data);
@@ -13,7 +26,8 @@ productsRouter.get('/', async (req, res) => {
   }
 });
 
-productsRouter.get('/:pid', async (req, res) => {
+// Proteger esta ruta solo para usuarios con roles 'user' y 'admin'
+productsRouter.get('/:pid', handlePolicies(['user', 'admin']), async (req, res) => {
   const productId = req.params.pid;
   try {
     const data = await readFile('productos.json');
@@ -29,7 +43,8 @@ productsRouter.get('/:pid', async (req, res) => {
   }
 });
 
-productsRouter.post('/', async (req, res) => {
+// Proteger esta ruta solo para usuarios con roles 'admin'
+productsRouter.post('/', handlePolicies(['admin']), async (req, res) => {
   const {
     title,
     description,
@@ -63,7 +78,8 @@ productsRouter.post('/', async (req, res) => {
   }
 });
 
-productsRouter.put('/:pid', async (req, res) => {
+// Proteger esta ruta solo para usuarios con roles 'admin'
+productsRouter.put('/:pid', handlePolicies(['admin']), async (req, res) => {
   const productId = req.params.pid;
   const updatedProduct = req.body;
 
@@ -85,7 +101,8 @@ productsRouter.put('/:pid', async (req, res) => {
   }
 });
 
-productsRouter.delete('/:pid', async (req, res) => {
+// Proteger esta ruta solo para usuarios con roles 'admin'
+productsRouter.delete('/:pid', handlePolicies(['admin']), async (req, res) => {
   const productId = req.params.pid;
 
   try {
@@ -99,5 +116,40 @@ productsRouter.delete('/:pid', async (req, res) => {
   }
 });
 
-export default productsRouter;
+productsRouter.delete('/:pid', handlePolicies(['admin']), async (req, res) => {
+  const productId = req.params.pid;
 
+  try {
+    const data = await readFile('productos.json');
+    let products = JSON.parse(data);
+    const product = products.find((p) => p.id.toString() === productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    const user = await User.findById(product.owner);
+
+    products = products.filter((p) => p.id.toString() !== productId);
+    await writeFile('productos.json', JSON.stringify(products, null, 2));
+
+    if (user && user.role === 'premium') {
+      const mailOptions = {
+        from: process.env.USER_GMAIL,
+        to: user.email,
+        subject: 'Producto eliminado',
+        text: `Hola ${user.name}, tu producto con ID ${product._id} ha sido eliminado.`
+      };
+
+      await transporter.sendMail(mailOptions);
+    }
+
+    res.json({ message: 'Producto eliminado exitosamente' });
+  } catch (error) {
+    logger.error('Error al eliminar producto:', error);
+    res.status(500).json({ error: 'Error al eliminar el producto' });
+  }
+});
+
+
+export default productsRouter;

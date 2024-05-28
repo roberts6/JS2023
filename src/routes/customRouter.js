@@ -1,17 +1,17 @@
 import { Router as ExpressRouter } from "express";
-import handlePolicies from '../middleware/handlePolicies.js'
+import handlePolicies from '../middleware/handlePolicies.js';
 
 export default class CustomRouter {
-  constructor(){
+  constructor() {
     this.router = ExpressRouter();
     this.init();
   }
 
-  getRouter(){
+  getRouter() {
     return this.router;
   }
 
-  async applyCallbacks(callbacks){
+  async applyCallbacks(callbacks) {
     return callbacks.map((callback) => async (req, res) => {
       try {
         await callback(req, res);
@@ -22,17 +22,17 @@ export default class CustomRouter {
     });
   }
 
-  init(){}
+  init() {}
 
-  get(path, ...callbacks){
+  get(path, ...callbacks) {
     this.router.get(path, ...callbacks);
   }
 
-  post(path, ...callbacks){
+  post(path, ...callbacks) {
     this.router.post(path, ...callbacks);
   }
 
-  put(path, ...callbacks){
+  put(path, ...callbacks) {
     this.router.put(path, ...callbacks);
   }
 
@@ -42,4 +42,5 @@ export default class CustomRouter {
 
   handlePolicies = handlePolicies;
 }
+
 

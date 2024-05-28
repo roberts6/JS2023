@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,9 +63,17 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        #protectedButton {
+            margin-top: 20px;
+            background-color: #28a745;
+        }
+
+        #protectedButton:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Iniciar Sesión</h1>
@@ -85,8 +92,12 @@
             <form action="/auth/github" method="GET" class="github-form">
                 <button type="submit">Iniciar Sesión con GitHub</button>
             </form>
+
+            <!-- Botón para probar acceso a la ruta protegida -->
+            <button id="protectedButton">Acceder a ruta protegida</button>
         </div>
     </div>
+
     <script>
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -94,7 +105,7 @@
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch('http://localhost:3000/user/login', {
+            const response = await fetch('/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -102,36 +113,59 @@
                 body: JSON.stringify({ email, password }),
             });
 
-            const data = await response.json(); // Obtener los datos de la respuesta JSON
-            console.log('esta es la data ', data);
+            const data = await response.json();
+            console.log('Datos recibidos', data);
 
-            // Verificar si se recibió un token de autorización en la respuesta
             if (data.access_token) {
                 localStorage.setItem('token', data.access_token);
-
-                const token = localStorage.getItem('token');
-                const protectedResponse = await fetch('http://localhost:3000/user/protected', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (protectedResponse.ok) {
-                    const responseData = await protectedResponse.json();
-                    console.log(responseData);
-                } else {
-                    console.error('Error al intentar acceder a la ruta protegida.');
-                }
+                console.log('Token guardado en localStorage:', localStorage.getItem('token'));
+                window.location.href = data.redirectURL;
             } else {
-                console.error('No se recibió un token de autorización.');
+                console.error('No se recibió un token.');
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
         }
     });
-</script>
 
+    document.getElementById('protectedButton').addEventListener('click', async function () {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No hay token almacenado en localStorage.');
+            alert('No se encontró el token en el almacenamiento local. Por favor, inicie sesión primero.');
+            return;
+        }
+
+        console.log('Token obtenido del almacenamiento local:', token);
+
+        try {
+            const protectedResponse = await fetch('/products', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (protectedResponse.ok) {
+                try {
+                    const responseData = await protectedResponse.json();
+                    console.log(responseData);
+                    alert('Acceso autorizado: ' + JSON.stringify(responseData));
+                } catch (error) {
+                    console.error('Error al analizar la respuesta JSON:', error);
+                    alert(`Error al intentar acceder a la ruta protegida: ${error.message}`);
+                }
+            } else {
+                const errorText = await protectedResponse.text();
+                console.error('Error al intentar acceder a la ruta protegida. Código:', protectedResponse.status, 'Texto:', errorText);
+                alert(`Error al intentar acceder a la ruta protegida: ${protectedResponse.status} ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Error al intentar acceder a la ruta protegida:', error);
+            alert('Error al intentar acceder a la ruta protegida: ' + error.message);
+        }
+    });
+    </script>
 </body>
 </html>
