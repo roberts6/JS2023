@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Proteger esta ruta solo para usuarios con roles 'user' y 'admin'
+// Protege esta ruta solo para usuarios con roles 'user' y 'admin'
 productsRouter.get('/', handlePolicies(['user', 'admin']), async (req, res) => {
   try {
     const data = await readFile('productos.json');
@@ -26,7 +26,7 @@ productsRouter.get('/', handlePolicies(['user', 'admin']), async (req, res) => {
   }
 });
 
-// Proteger esta ruta solo para usuarios con roles 'user' y 'admin'
+// Protege esta ruta solo para usuarios con roles 'user' y 'admin'
 productsRouter.get('/:pid', handlePolicies(['user', 'admin']), async (req, res) => {
   const productId = req.params.pid;
   try {
